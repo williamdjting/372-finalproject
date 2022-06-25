@@ -1,11 +1,11 @@
 import './App.css';
-import Example from './components/example';
+import Example from './example/example';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <p>Let's fetch a message from the server...</p>
+        <p>Starting...</p>
         <Example />
       </header>
     </div>
