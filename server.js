@@ -1,5 +1,11 @@
-var express = require('express');
-var path = require('path');
+const express = require('express');
+const mongoose = require('mongoose');
+const path = require('path');
+require('dotenv').config();
+
+mongoose.connect(process.env.DB_URL);
+const db = mongoose.connection;
+db.on('error', (error) => console.error(error));
 
 const app = express();
 const port = 5000;
@@ -8,7 +14,7 @@ const usersRouter = require('./routes/users');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'client', 'build')));
 
 app.use('/users', usersRouter);
 
