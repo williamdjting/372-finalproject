@@ -16,7 +16,11 @@ function Login() {
         })
 
         const data = await res.json();
-        console.log(data);
+        if (data.user) {
+            alert('Login');
+        } else {
+            alert('Failed to login...');
+        }
     }
 
     return (
