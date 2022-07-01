@@ -3,12 +3,13 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Loading from './components/Loading';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const ProtectedRoute = ({ children, redirectPath = '/login' }) => {
   const { currentUser, isLoading } = useAuth();
   return (
-    isLoading ? <h1>Loading</h1> :
+    isLoading ? <Loading /> :
       currentUser ? children : <Navigate to={redirectPath} replace />
   );
 };
