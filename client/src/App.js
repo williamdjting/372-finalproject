@@ -1,12 +1,11 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import LoginRegister from './pages/LoginRegister';
 import Dashboard from './pages/Dashboard';
 import Loading from './components/Loading';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-const ProtectedRoute = ({ children, redirectPath = '/login' }) => {
+const ProtectedRoute = ({ children, redirectPath = '/' }) => {
   const { currentUser, isLoading } = useAuth();
   return (
     isLoading ? <Loading /> :
@@ -28,8 +27,7 @@ const App = () => {
                 </ProtectedRoute>
               }
             />
-            <Route path='/login' element={<Login />} />
-            <Route path='/register' element={<Register />} />
+            <Route exact path='/' element={<LoginRegister />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

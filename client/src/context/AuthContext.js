@@ -44,10 +44,23 @@ export function AuthProvider({ children }) {
         });
     }
 
+    async function register(email, username, password) {
+        const res = await fetch('/users/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username, email, password
+            }),
+        })
+
+        await res.json();
+    }
+
     const value = {
         currentUser,
         isLoading,
         login,
+        register,
     }
 
     return (
