@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Loading from '../components/Loading';
 
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -14,6 +15,7 @@ import Container from '@mui/material/Container';
 
 function Login() {
     const [isViewingLogin, setIsViewingLogin] = useState(true);
+    const [isMakingRequesting, setIsMakingRequesting] = useState(false);
     const emailRef = useRef();
     const usernameRef = useRef();
     const passwordRef = useRef();
@@ -29,7 +31,10 @@ function Login() {
     async function attemptLogin(event) {
         event.preventDefault();
 
+        setIsMakingRequesting(true);
         await login(emailRef.current.value, passwordRef.current.value);
+        setIsMakingRequesting(false);
+
         navigate('/dashboard');
     }
 
@@ -78,6 +83,7 @@ function Login() {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        disabled={isMakingRequesting}
                     >
                         Sign In
                     </Button>
@@ -140,6 +146,7 @@ function Login() {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        disabled={isMakingRequesting}
                     >
                         Register
                     </Button>
@@ -156,16 +163,17 @@ function Login() {
     }
 
     return (
-        <Container maxWidth="xs">
-            <Box sx={{
-                marginTop: 8,
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-            }}>
-                {isViewingLogin ? loginPage() : registerPage()}
-            </Box>
-        </Container>
+        isMakingRequesting ? <Loading />
+            : <Container maxWidth="xs">
+                <Box sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}>
+                    {isViewingLogin ? loginPage() : registerPage()}
+                </Box>
+            </Container>
     );
 }
 
