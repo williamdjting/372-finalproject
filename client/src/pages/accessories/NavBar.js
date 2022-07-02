@@ -6,7 +6,7 @@ const NavBar = () => {
     return (
 
         <div className="nav">
-            <p className="logo"><a href="/dashboard2">GroupStock</a></p>
+            <p className="logo"><a href="/dashboard2"/>GroupStock</p>
            
             <ul>
                 <li>
