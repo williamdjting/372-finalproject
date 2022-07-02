@@ -6,20 +6,20 @@ const NavBar = () => {
     return (
 
         <div className="nav">
-            <p className="logo">GroupStock</p>
+            <p className="logo"><a href="/dashboard2">GroupStock</a></p>
            
             <ul>
                 <li>
-                    <a href="/yourwatchlists">Your Watchlists</a>
+                    <a href="/dashboard6">Your Watchlists</a>
 
                 </li>
 
                 <li>
-                    <a href="/creategroup">Create Group</a>
+                    <a href="/dashboard3">Create Group</a>
                 </li>
 
                 <li>
-                    <a href="/login">Logout</a>
+                    <a href="/">Logout</a>
 
                 </li>
                 </ul>
