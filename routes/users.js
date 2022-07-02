@@ -1,9 +1,52 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const User = require('../models/user.model');
+const router = express.Router();
+const bcrypt = require('bcrypt');
+require('dotenv').config();
 
-/* GET users listing. */
-router.get('/', function (req, res, next) {
-    res.json({ 'test': 'this is a message' });
+router.post('/register', async (req, res) => {
+    try {
+        await User.create({
+            username: req.body.username,
+            email: req.body.email,
+            password: req.body.password
+        });
+        res.json({ status: 'success' });
+    } catch (err) {
+        res.json({ status: 'failed' });
+    }
 });
+
+router.post('/login', async (req, res) => {
+    const user = await User.findOne({ email: req.body.email });
+    if (user && await bcrypt.compare(req.body.password, user.password)) {
+        const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 500 });
+        res.json({ auth: true, profile: { user: user, token: token } });
+    } else {
+        res.json({ auth: false });
+    }
+});
+
+router.get('/isLoggedIn', HasToken, async (req, res) => {
+    if (req.user)
+        return res.json({ auth: true });
+    else
+        return res.json({ auth: false });
+});
+
+function HasToken(req, res, next) {
+    const token = req.header('x-auth-token');
+    if (!token)
+        return res.json({ auth: false });
+
+    try {
+        const jwtUser = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = jwtUser.user;
+        next();
+    } catch (error) {
+        return res.json({ auth: false });
+    }
+};
 
 module.exports = router;
