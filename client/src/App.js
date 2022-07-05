@@ -4,6 +4,7 @@ import LoginRegister from './pages/LoginRegister';
 import Dashboard from './pages/Dashboard';
 import Loading from './components/Loading';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import StockInfoContainer from './components/viz/StockInfoContainer';
 
 const ProtectedRoute = ({ children, redirectPath = '/' }) => {
   const { currentUser, isLoading } = useAuth();

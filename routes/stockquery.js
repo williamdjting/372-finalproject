@@ -2,11 +2,13 @@ const express = require('express');
 const fetch = require('node-fetch');
 const Mutex = require('async-mutex').Mutex;
 const router = express.Router();
+require('dotenv').config();
 const mutex = new Mutex;
 
 const ALPHA_VANTAGE_QUERY_URL = 'https://www.alphavantage.co/query?function=';
-const API_KEY = 'O5LYBCJIH9QHU58F'; //temp API KEY. still need to premium 
-const OVERVIEW = "OVERVIEW";
+const API_KEY = process.env.ALPHAVANTAGE_API_KEY
+const OVERVIEW = 'OVERVIEW';
+const LISTING_STATUS = 'LISTING_STATUS'
 const TTL = 5000000;
 const TTL_INTERVAL = 5000;
 
@@ -15,24 +17,51 @@ let companyOverviewCache = [];
 router.get('/companyStockOverview', async (req, res) => {
     try {
         const cacheResponseObj = await findCompanyOverviewCache(req.query.companySymbol);
-        if (cacheResponseObj) return res.json(cacheResponseObj);
-        const response = await fetch(createQuery(OVERVIEW, req.query.companySymbol));
+        if (cacheResponseObj) return res.json(cacheResponseObj.companyOverview);
+        const response = await fetch(createQueryUrl(OVERVIEW, req.query.companySymbol));
         const overviewObj = await response.json();
         addToCompanyOverviewCache(overviewObj, TTL);
         return res.json(overviewObj);
     } catch (error) {
         console.log(error);
         return res.status(400).send({
-            message: 'Failed to query company stock'
+            message: 'Failed to query stock overview'
         });
     }
 });
 
-//TODO: Need to add in other query functionality. Currently supports company overview. Commented out the query with full functionality for future use.
-const createQuery = (func, symbol, interval, timePeriod, seriesType) => {
-    // let stockUrl = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&interval=${interval}&time_period=${timePeriod}&series_type=${seriesType}&apikey=${API_KEY}`;
-    let overviewUrl = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&apikey=${API_KEY}`;
-    return overviewUrl
+router.get('/allStocksCodeAndName', async (req, res) => {
+    try {
+        const response = await fetch(createQueryUrl(LISTING_STATUS))
+        const csvData = await response.text();
+        let jsonData = csvToJSON(csvData);
+        jsonData = jsonData.map(row => {
+            let updatedRow = row;
+            delete updatedRow.ipoDate;
+            delete updatedRow. delistingDate;
+            delete updatedRow.status;
+            return updatedRow;
+        }).filter(row => row.assetType === 'Stock' && row.name !== '');
+        return res.json(jsonData);
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send({
+            message: 'Failed to query stock code and name'
+        });
+    }
+});
+
+//TODO: Need to add in other query functionality. Currently supports company overview and listing status
+const createQueryUrl = (func, symbol, interval, timePeriod, seriesType) => {
+    let url = '';
+    switch (func) {
+        case OVERVIEW:
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&apikey=${API_KEY}`;
+            break;
+        case LISTING_STATUS:
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&apikey=${API_KEY}`;
+    }
+    return url
 };
 
 const findCompanyOverviewCache = async (companySymbol) => {
@@ -40,7 +69,6 @@ const findCompanyOverviewCache = async (companySymbol) => {
     let retObj;
     try {
         companyOverviewCache.forEach( obj => {
-            console.log(obj.companyOverview.Symbol === companySymbol.toUpperCase())
             if (obj.companyOverview.Symbol === companySymbol.toUpperCase()) {
                 retObj = obj;
             };
@@ -87,6 +115,22 @@ const cacheTimerInterval = () => {
     decrementTTLAndClearDeadObjInCache();
     // debugPrintCache();
 };
+
+//citation
+//dervied from: https://stackoverflow.com/questions/64873956/converting-csv-tao-json-and-putting-json-into-html-table-with-js
+const csvToJSON = (csvDataString) => {
+    const rowsHeader = csvDataString.split('\r').join('').split('\n');
+    const headers = rowsHeader[0].split(',');
+    const content = rowsHeader.filter( (_,i) => i > 0 );
+    const jsonFormatted = content.map(row => {
+        const columns = row.split(',');
+        return columns.reduce((p,c, i) => {
+            p[headers[i]] = c;
+            return p;
+        }, {})
+    })
+    return jsonFormatted;
+}
 
 setInterval(cacheTimerInterval, TTL_INTERVAL);
 
