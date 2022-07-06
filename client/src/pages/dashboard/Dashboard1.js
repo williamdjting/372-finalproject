@@ -7,33 +7,32 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
+function createData(name, price, amount, total) {
+    return { name, price, amount, total };
   }
   
   const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
+    createData('Apple', 120, 5.0, 600),
+    createData('Google', 2000, 1, 2000),
+    createData('Amazon', 130, 5, 650),
   ];
   
 function Dashboard1() {
     return (
       <div>
-        <h2>Create your personal watchlist</h2>
+        <h2 align="left">Create your personal watchlist</h2>
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 400 }} aria-label="simple table">
             <TableHead>
                 <TableRow>
-                <TableCell>Dessert (100g serving)</TableCell>
-                <TableCell align="right">Calories</TableCell>
-                <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                <TableCell align="right">Protein&nbsp;(g)</TableCell>
+                <TableCell><b>Your Watchlist</b></TableCell>
+                <TableCell align="right"><b>Stock Name</b></TableCell>
+                <TableCell align="right"><b>Share Price</b></TableCell>
+                <TableCell align="right"><b>Total</b></TableCell>
+
                 </TableRow>
             </TableHead>
+            {/* //fetch API right here inside <tablebody> and render the hook here// */}
             <TableBody>
                 {rows.map((row) => (
                 <TableRow
@@ -43,10 +42,9 @@ function Dashboard1() {
                     <TableCell component="th" scope="row">
                     {row.name}
                     </TableCell>
-                    <TableCell align="right">{row.calories}</TableCell>
-                    <TableCell align="right">{row.fat}</TableCell>
-                    <TableCell align="right">{row.carbs}</TableCell>
-                    <TableCell align="right">{row.protein}</TableCell>
+                    <TableCell align="right">{row.price}</TableCell>
+                    <TableCell align="right">{row.amount}</TableCell>
+                    <TableCell align="right">{row.total}</TableCell>
                 </TableRow>
                 ))}
             </TableBody>
@@ -56,22 +54,6 @@ function Dashboard1() {
     );
   }
 
-
-
-
-// function Dashboard1() {
-//     return (
-//         <>
-//         <DataGrid
-//             rows={5}
-//             columns={5}
-//             pageSize={5}
-//             rowsPerPageOptions={[5]}
-//             checkboxSelection
-//         />
-//         </>
-//     )
-// }
 
 
 export default Dashboard1;
