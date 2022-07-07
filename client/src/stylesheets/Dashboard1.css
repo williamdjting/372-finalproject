@@ -1,0 +1,13 @@
+#outer1
+{
+    width:100%;
+    text-align: center;
+}
+.inner1
+{
+    display: inline-block;
+}
+
+#createyourpersonalwatchlist1 {
+    text-align: center;
+}
