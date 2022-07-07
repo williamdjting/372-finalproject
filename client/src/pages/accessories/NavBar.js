@@ -10,7 +10,22 @@ const NavBar = () => {
            
             <ul>
                 <li>
-                    <a href="/dashboard6">Your Watchlists</a>
+                    <a href="/dashboard2"> Personal Watchlist</a>
+
+                </li>
+
+                <li>
+                    <a href="/dashboard5">Group Watchlists</a>
+
+                </li>
+
+                <li>
+                    <a href="/dashboard9">Insights</a>
+
+                </li>
+
+                <li>
+                    <a href="/dashboard6">Change Watchlists</a>
 
                 </li>
 
