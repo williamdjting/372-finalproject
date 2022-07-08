@@ -11,3 +11,10 @@
 #createyourpersonalwatchlist7 {
     text-align: center;
 }
+
+#inputboxsize7 {
+    height: 40px;
+    width: 150px;
+    text-align: center;
+    font-size: 16px;
+}

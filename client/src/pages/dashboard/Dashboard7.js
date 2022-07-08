@@ -32,17 +32,21 @@ function Dashboard7() {
         <br></br>
         <div id="outer7">
             
-            <div class="inner7">
+            {/* <div class="inner8">
                 <Box  component="form" noValidate autoComplete="off">
                             <FormControl sx={{ width: '25ch' }}>
                             <OutlinedInput maxlength="4" placeholder="Please enter stock ticker" />
+                            
                         </FormControl>
                 </Box>
 
-            </div>
+            </div> */}
+            <form class="inner7" >
+                <input id="inputboxsize7" type="text" maxlength="4" placeholder="Enter stock ticker"></input>
+            </form>
             <br></br>
             <br></br>
-            <div class="inner8">
+            <div class="inner7">
         <Stack  spacing={0} direction="row">
              <Button variant="contained" onClick={() => {}}>Add
              </Button>
@@ -54,14 +58,15 @@ function Dashboard7() {
         <TableContainer align="right" component={Paper}>
             
             
-            <Table  sx={{ minWidth: 400, maxWidth: 1200}} aria-label="simple table">
-                <TableHead>
+            <Table  sx={{ minWidth: 400, maxWidth: 2400}} aria-label="simple table">
+            <TableHead>
                 <TableRow>
-                <TableCell><b>Your Stocks</b></TableCell>
+                {/* <TableCell align="left"><b></b></TableCell> */}
+                <TableCell align="left"><b>Your Stocks</b></TableCell>
                 <TableCell align="right"><b>Share Price</b></TableCell>
                 <TableCell align="right"><b>Number of Shares</b></TableCell>
                 <TableCell align="right"><b>Total</b></TableCell>
-                <TableCell align="right"><b></b></TableCell>
+                <TableCell align="right"><b>Remove Stock</b></TableCell>
                 </TableRow>
             </TableHead>
             {/* //fetch API right here inside <tablebody> and render the hook here// */}
