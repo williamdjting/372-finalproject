@@ -61,6 +61,7 @@ function Dashboard8() {
                 <TableCell align="right"><b>Share Price</b></TableCell>
                 <TableCell align="right"><b>Number of Shares</b></TableCell>
                 <TableCell align="right"><b>Total</b></TableCell>
+                <TableCell align="right"><b></b></TableCell>
                 </TableRow>
             </TableHead>
             {/* //fetch API right here inside <tablebody> and render the hook here// */}
