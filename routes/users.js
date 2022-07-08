@@ -49,4 +49,7 @@ function HasToken(req, res, next) {
     }
 };
 
-module.exports = router;
+module.exports = {
+    routes: router,
+    HasToken: HasToken
+};
