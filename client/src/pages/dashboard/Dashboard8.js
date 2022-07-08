@@ -61,7 +61,6 @@ function Dashboard8() {
                 <TableCell align="right"><b>Share Price</b></TableCell>
                 <TableCell align="right"><b>Number of Shares</b></TableCell>
                 <TableCell align="right"><b>Total</b></TableCell>
-
                 </TableRow>
             </TableHead>
             {/* //fetch API right here inside <tablebody> and render the hook here// */}
@@ -79,10 +78,12 @@ function Dashboard8() {
                     <TableCell align="right">{row.amount}</TableCell>
                     <TableCell align="right">{row.total}</TableCell>
                     <TableCell align="right">
-                        <Stack spacing={0} direction="row">
+                        {/* <Stack spacing={0} direction="row">
                             <Button variant="contained" onClick={() => {
                             }}>Remove</Button>
-                        </Stack>
+                        </Stack> */}
+                    <Button variant="contained" onClick={() => {
+                            }}>Remove</Button>
                     </TableCell>
                 </TableRow>
                 ))}

@@ -79,10 +79,12 @@ function Dashboard4() {
                     <TableCell align="right">{row.amount}</TableCell>
                     <TableCell align="right">{row.total}</TableCell>
                     <TableCell align="right">
-                        <Stack spacing={0} direction="row">
+                        {/* <Stack spacing={0} direction="row">
                             <Button variant="contained" onClick={() => {
                             }}>Remove</Button>
-                        </Stack>
+                        </Stack> */}
+                    <Button variant="contained" onClick={() => {
+                            }}>Remove</Button>
                     </TableCell>
                 </TableRow>
                 ))}
