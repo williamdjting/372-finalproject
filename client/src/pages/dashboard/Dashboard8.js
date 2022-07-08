@@ -35,7 +35,7 @@ function Dashboard8() {
             <div class="inner8">
                 <Box  component="form" noValidate autoComplete="off">
                             <FormControl sx={{ width: '25ch' }}>
-                            <OutlinedInput placeholder="Please enter text" />
+                            <OutlinedInput maxlength="4" placeholder="Please enter stock ticker" />
                         </FormControl>
                 </Box>
 
