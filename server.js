@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
 app.use('/users', usersRouter.routes);
-app.use('/stockquery', stockQueryRouter)
+app.use('/stockquery', usersRouter.HasToken, stockQueryRouter)
 
 app.listen(port, () => {
     console.log(`Server started on port ${port}`)
