@@ -4,7 +4,6 @@ const Mutex = require('async-mutex').Mutex;
 const router = express.Router();
 require('dotenv').config();
 const mutex = new Mutex;
-const auth = require('./users');
 
 const ALPHA_VANTAGE_QUERY_URL = 'https://www.alphavantage.co/query?function=';
 const API_KEY = process.env.ALPHAVANTAGE_API_KEY
@@ -15,7 +14,7 @@ const TTL_INTERVAL = 5000;
 
 let companyOverviewCache = [];
 
-router.get('/companyStockOverview', auth.HasToken, async (req, res) => {
+router.get('/companyStockOverview' ,async (req, res) => {
     try {
         const cacheResponseObj = await findCompanyOverviewCache(req.query.companySymbol);
         if (cacheResponseObj) return res.json(cacheResponseObj.companyOverview);
@@ -31,7 +30,7 @@ router.get('/companyStockOverview', auth.HasToken, async (req, res) => {
     }
 });
 
-router.get('/allStocksCodeAndName', auth.HasToken, async (req, res) => {
+router.get('/allStocksCodeAndName', async (req, res) => {
     try {
         const response = await fetch(createQueryUrl(LISTING_STATUS))
         const csvData = await response.text();
