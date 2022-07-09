@@ -4,6 +4,7 @@ const Mutex = require('async-mutex').Mutex;
 const router = express.Router();
 require('dotenv').config();
 const mutex = new Mutex;
+const User = require('../models/user.model');
 
 const ALPHA_VANTAGE_QUERY_URL = 'https://www.alphavantage.co/query?function=';
 const API_KEY = process.env.ALPHAVANTAGE_API_KEY
@@ -50,6 +51,31 @@ router.get('/allStocksCodeAndName', async (req, res) => {
         });
     }
 });
+
+router.post('/addUserStockCodeToDb', async (req, res) => {
+    let userObj = await getUserStockCodesFromDbHelper(req.body.userName);
+    console.log(userObj);
+    
+    if (!userObj.stockCodes || !userObj.stockCodes.includes(req.body.newStockCode)) {
+        await User.updateOne({ _id: userObj._id }, { $push : { stockCodes : req.body.newStockCode }}).catch(err => console.warn(err));
+        res.send({post: 'stock post success'});
+    } else {
+        res.send({post: 'success, stock is already in the db'});
+    }
+});
+
+router.get('/getUserStockCodesFromDb', async (req, res) => {
+    let userObj = await getUserStockCodesFromDbHelper(req.body.userName)
+    res.send(userObj.stockCodes);
+});
+
+// router.get('/getCompanyStockPriceTimeSeries', async (req, res) => {
+
+// });
+
+const getUserStockCodesFromDbHelper = async (usrName) => {
+    return await User.findOne({ username: usrName }, '_id stockCodes');
+};
 
 //TODO: Need to add in other query functionality. Currently supports company overview and listing status
 const createQueryUrl = (func, symbol, interval, timePeriod, seriesType) => {
