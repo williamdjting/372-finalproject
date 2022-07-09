@@ -1,0 +1,20 @@
+#outer8
+{
+    width:100%;
+    text-align: center;
+}
+.inner8
+{
+    display: inline-block;
+}
+
+#createyourpersonalwatchlist8 {
+    text-align: center;
+}
+
+#inputboxsize8 {
+    height: 40px;
+    width: 150px;
+    text-align: center;
+    font-size: 16px;
+}

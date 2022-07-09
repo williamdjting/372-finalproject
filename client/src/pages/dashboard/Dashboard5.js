@@ -1,7 +1,9 @@
 import React from 'react'
 
-export default function Dashboard() {
+function Dashboard5() {
     return (
         <h1>You are logged in!</h1>
     )
 }
+
+export default Dashboard5;
