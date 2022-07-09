@@ -1,9 +1,20 @@
 import React, { useContext, useState, useEffect } from "react"
+import axios from 'axios'
 
-const AuthContext = React.createContext()
+axios.interceptors.request.use(
+    config => {
+        config.headers['x-auth-token'] = JSON.parse(localStorage.getItem('profile'))?.token;
+        return config
+    },
+    error => {
+        Promise.reject(error)
+    }
+);
+
+const AuthContext = React.createContext();
 
 export function useAuth() {
-    return useContext(AuthContext)
+    return useContext(AuthContext);
 }
 
 export function AuthProvider({ children }) {
@@ -15,13 +26,8 @@ export function AuthProvider({ children }) {
     }, []);
 
     async function checkAuth() {
-        await fetch('/users/isLoggedIn', {
-            method: 'GET',
-            headers: new Headers({
-                "x-auth-token": JSON.parse(localStorage.getItem('profile'))?.token,
-            }),
-        }).then((res) => res.json()).then((data) => {
-            setCurrentUser(data.auth);
+        await axios.get('/users/isLoggedIn').then((res) => {
+            setCurrentUser(res.data.auth);
             setIsLoading(false);
         }).catch((err) => {
             setCurrentUser();
@@ -30,30 +36,23 @@ export function AuthProvider({ children }) {
     }
 
     async function login(email, password) {
-        await fetch('/users/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email, password
-            }),
-        }).then((res) => res.json()).then(async (data) => {
-            if (data.auth) {
-                localStorage.setItem('profile', JSON.stringify(data.profile));
+        await axios.post('/users/login', {
+            email: email,
+            password: password
+        }).then(async (res) => {
+            if (res.data.auth) {
+                localStorage.setItem('profile', JSON.stringify(res.data.profile));
                 await checkAuth();
             }
         });
     }
 
     async function register(email, username, password) {
-        const res = await fetch('/users/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username, email, password
-            }),
-        })
-
-        await res.json();
+        await axios.post('/users/register', {
+            username: username,
+            password: password,
+            email: email
+        });
     }
 
     const value = {
