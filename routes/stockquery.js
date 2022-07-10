@@ -55,7 +55,7 @@ router.get('/allStocksCodeAndName', async (req, res) => {
 });
 
 router.post('/addUserStockTickerToDb', async (req, res) => {
-    let userObj = await getUserStockListFromDbHelper(req.body.userName);
+    let userObj = await getUserStockListFromDbHelper(req.user.username);
     if (!userObj.stockList || !userObj.stockList.find(obj => obj.code === req.body.stockCode)) {
         await User.updateOne({ _id: userObj._id }, { $push : { stockList : { 
             code: req.body.stockCode,
@@ -68,7 +68,7 @@ router.post('/addUserStockTickerToDb', async (req, res) => {
 });
 
 router.delete('/removeUserStockTickerFromDb', async (req, res) => {
-    let userObj = await getUserStockListFromDbHelper(req.body.userName);
+    let userObj = await getUserStockListFromDbHelper(req.user.username);
     if(userObj.stockList.find(obj => obj.code === req.body.stockCode)) {
         await User.updateOne({_id : userObj._id}, { $pull: { "stockList" : { "code" : req.body.stockCode }}});
         res.send({ post : "stock removed successfully" });
@@ -78,7 +78,7 @@ router.delete('/removeUserStockTickerFromDb', async (req, res) => {
 });
 
 router.get('/getUserStockListFromDb', async (req, res) => {
-    let userObj = await getUserStockListFromDbHelper(req.body.userName)
+    let userObj = await getUserStockListFromDbHelper(req.user.username)
     res.send(userObj.stockList);
 });
 
