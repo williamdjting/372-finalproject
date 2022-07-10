@@ -1,6 +1,7 @@
 const express = require('express');
 const fetch = require('node-fetch');
 const Mutex = require('async-mutex').Mutex;
+const axios = require('axios');
 const router = express.Router();
 require('dotenv').config();
 const mutex = new Mutex;
@@ -9,7 +10,8 @@ const User = require('../models/user.model');
 const ALPHA_VANTAGE_QUERY_URL = 'https://www.alphavantage.co/query?function=';
 const API_KEY = process.env.ALPHAVANTAGE_API_KEY
 const OVERVIEW = 'OVERVIEW';
-const LISTING_STATUS = 'LISTING_STATUS'
+const LISTING_STATUS = 'LISTING_STATUS';
+const TIME_SERIES_DAILY = 'TIME_SERIES_DAILY';
 const TTL = 5000000;
 const TTL_INTERVAL = 5000;
 
@@ -54,13 +56,11 @@ router.get('/allStocksCodeAndName', async (req, res) => {
 
 router.post('/addUserStockCodeToDb', async (req, res) => {
     let userObj = await getUserStockCodesFromDbHelper(req.body.userName);
-    console.log(userObj);
-    
     if (!userObj.stockCodes || !userObj.stockCodes.includes(req.body.newStockCode)) {
-        await User.updateOne({ _id: userObj._id }, { $push : { stockCodes : req.body.newStockCode }}).catch(err => console.warn(err));
-        res.send({post: 'stock post success'});
+        await User.updateOne({ _id: userObj._id }, { $push : { stockCodes : req.body.newStockCode }}).catch( err => console.warn(err));
+        res.send({ post: 'stock post success' });
     } else {
-        res.send({post: 'success, stock is already in the db'});
+        res.send({ post: 'success, stock is already in the db' });
     }
 });
 
@@ -69,9 +69,11 @@ router.get('/getUserStockCodesFromDb', async (req, res) => {
     res.send(userObj.stockCodes);
 });
 
-// router.get('/getCompanyStockPriceTimeSeries', async (req, res) => {
-
-// });
+//todo: may need to implement time series interval later. currently in daily format
+router.get('/getCompanyStockPriceTimeSeries', async (req, res) => {
+    let response = await axios.get(createQueryUrl(TIME_SERIES_DAILY, req.body.companySymbol));
+    res.send(response.data["Time Series (Daily)"]);
+});
 
 const getUserStockCodesFromDbHelper = async (usrName) => {
     return await User.findOne({ username: usrName }, '_id stockCodes');
@@ -86,6 +88,8 @@ const createQueryUrl = (func, symbol, interval, timePeriod, seriesType) => {
             break;
         case LISTING_STATUS:
             url = `${ALPHA_VANTAGE_QUERY_URL}${func}&apikey=${API_KEY}`;
+        case TIME_SERIES_DAILY:
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&outputsize=compact&apikey=${API_KEY}`
     }
     return url
 };
