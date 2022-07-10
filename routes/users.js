@@ -10,7 +10,8 @@ router.post('/register', async (req, res) => {
         await User.create({
             username: req.body.username,
             email: req.body.email,
-            password: req.body.password
+            password: req.body.password,
+            stockCodes: []
         });
         res.json({ status: 'success' });
     } catch (err) {

@@ -1,14 +1,17 @@
 const express = require('express');
-const fetch = require('node-fetch');
 const Mutex = require('async-mutex').Mutex;
+const axios = require('axios');
+const helper = require('./helper');
 const router = express.Router();
 require('dotenv').config();
 const mutex = new Mutex;
+const User = require('../models/user.model');
 
 const ALPHA_VANTAGE_QUERY_URL = 'https://www.alphavantage.co/query?function=';
 const API_KEY = process.env.ALPHAVANTAGE_API_KEY
 const OVERVIEW = 'OVERVIEW';
-const LISTING_STATUS = 'LISTING_STATUS'
+const LISTING_STATUS = 'LISTING_STATUS';
+const TIME_SERIES_DAILY = 'TIME_SERIES_DAILY';
 const TTL = 5000000;
 const TTL_INTERVAL = 5000;
 
@@ -16,10 +19,10 @@ let companyOverviewCache = [];
 
 router.get('/companyStockOverview' ,async (req, res) => {
     try {
-        const cacheResponseObj = await findCompanyOverviewCache(req.query.companySymbol);
+        const cacheResponseObj = await findCompanyOverviewCache(req.body.companySymbol);
         if (cacheResponseObj) return res.json(cacheResponseObj.companyOverview);
-        const response = await fetch(createQueryUrl(OVERVIEW, req.query.companySymbol));
-        const overviewObj = await response.json();
+        const response = await axios.get(createQueryUrl(OVERVIEW, req.body.companySymbol));
+        const overviewObj = await response.data;
         addToCompanyOverviewCache(overviewObj, TTL);
         return res.json(overviewObj);
     } catch (error) {
@@ -32,9 +35,9 @@ router.get('/companyStockOverview' ,async (req, res) => {
 
 router.get('/allStocksCodeAndName', async (req, res) => {
     try {
-        const response = await fetch(createQueryUrl(LISTING_STATUS))
-        const csvData = await response.text();
-        let jsonData = csvToJSON(csvData);
+        const response = await axios(createQueryUrl(LISTING_STATUS))
+        const csvData = await response.data;
+        let jsonData = helper.csvToJSON(csvData);
         jsonData = jsonData.map(row => {
             let updatedRow = row;
             delete updatedRow.ipoDate;
@@ -51,6 +54,44 @@ router.get('/allStocksCodeAndName', async (req, res) => {
     }
 });
 
+router.post('/addUserStockTickerToDb', async (req, res) => {
+    let userObj = await getUserStockListFromDbHelper(req.user.username);
+    if (!userObj.stockList || !userObj.stockList.find(obj => obj.code === req.body.stockCode)) {
+        await User.updateOne({ _id: userObj._id }, { $push : { stockList : { 
+            code: req.body.stockCode,
+            numberOfShares: req.body.numberOfShares
+        }}}).catch( err => console.warn(err));
+        res.send({ post: 'ticker added success' });
+    } else {
+        res.send({ post: 'success, stock ticker is already in the db' });
+    }
+});
+
+router.delete('/removeUserStockTickerFromDb', async (req, res) => {
+    let userObj = await getUserStockListFromDbHelper(req.user.username);
+    if(userObj.stockList.find(obj => obj.code === req.body.stockCode)) {
+        await User.updateOne({_id : userObj._id}, { $pull: { "stockList" : { "code" : req.body.stockCode }}});
+        res.send({ post : "stock removed successfully" });
+    } else {
+        res.send({ post : "user does not have this stock in the db" });
+    }
+});
+
+router.get('/getUserStockListFromDb', async (req, res) => {
+    let userObj = await getUserStockListFromDbHelper(req.user.username)
+    res.send(userObj.stockList);
+});
+
+//todo: may need to implement time series interval later. currently in daily format
+router.get('/getCompanyStockPriceTimeSeries', async (req, res) => {
+    let response = await axios.get(createQueryUrl(TIME_SERIES_DAILY, req.body.companySymbol));
+    res.send(response.data["Time Series (Daily)"]);
+});
+
+const getUserStockListFromDbHelper = async (usrName) => {
+    return await User.findOne({ username: usrName }, '_id stockList');
+};
+
 //TODO: Need to add in other query functionality. Currently supports company overview and listing status
 const createQueryUrl = (func, symbol, interval, timePeriod, seriesType) => {
     let url = '';
@@ -60,6 +101,8 @@ const createQueryUrl = (func, symbol, interval, timePeriod, seriesType) => {
             break;
         case LISTING_STATUS:
             url = `${ALPHA_VANTAGE_QUERY_URL}${func}&apikey=${API_KEY}`;
+        case TIME_SERIES_DAILY:
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&outputsize=compact&apikey=${API_KEY}`
     }
     return url
 };
@@ -115,22 +158,6 @@ const cacheTimerInterval = () => {
     decrementTTLAndClearDeadObjInCache();
     // debugPrintCache();
 };
-
-//citation
-//dervied from: https://stackoverflow.com/questions/64873956/converting-csv-tao-json-and-putting-json-into-html-table-with-js
-const csvToJSON = (csvDataString) => {
-    const rowsHeader = csvDataString.split('\r').join('').split('\n');
-    const headers = rowsHeader[0].split(',');
-    const content = rowsHeader.filter( (_,i) => i > 0 );
-    const jsonFormatted = content.map(row => {
-        const columns = row.split(',');
-        return columns.reduce((p,c, i) => {
-            p[headers[i]] = c;
-            return p;
-        }, {})
-    })
-    return jsonFormatted;
-}
 
 setInterval(cacheTimerInterval, TTL_INTERVAL);
 
