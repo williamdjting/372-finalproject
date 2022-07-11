@@ -1,0 +1,13 @@
+.col9 {
+  float: center;
+  width: 33.33%;
+  padding: 10px;
+
+}
+
+/* Clear floats after the columns */
+.row9:after {
+  content: "";
+  display: table;
+  clear: both;
+}
