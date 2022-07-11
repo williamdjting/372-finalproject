@@ -36,7 +36,7 @@ function Dashboard3() {
                         <input id="inputboxsize3" name="groupDescription" type="text" maxlength="50" placeholder="Description"></input>
                         <br></br>
                         <br></br>
-                        <Button size="medium" variant="contained" >Next</Button>
+                        <Button size="medium" variant="contained" href="/dashboard4">Next</Button>
                     </form>
                     <br></br>
                 </TableCell>

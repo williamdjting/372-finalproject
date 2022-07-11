@@ -21,7 +21,7 @@ function createData1(name, price, revenue, revenueGrowth, psRatio, grossProfit, 
 }
   
 const rows1 = [
-    createData1('Shopify', 35.57, 4600000000,57,28, 0.94,335000000,28.23),
+    createData1('Shopify', 35.57, 4600000000,57,28, 0.94,335000000,28.23)
 
 ];
 
