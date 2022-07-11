@@ -8,9 +8,9 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import FormControl, { useFormControl } from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Box from '@mui/material/Box';
+// import FormControl, { useFormControl } from '@mui/material/FormControl';
+// import OutlinedInput from '@mui/material/OutlinedInput';
+// import Box from '@mui/material/Box';
 import '../../stylesheets/Dashboard8.css'
 
 function createData(name, price, amount, total) {

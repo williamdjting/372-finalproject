@@ -8,20 +8,20 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import FormControl, { useFormControl } from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import Box from '@mui/material/Box';
+// import FormControl, { useFormControl } from '@mui/material/FormControl';
+// import OutlinedInput from '@mui/material/OutlinedInput';
+// import Box from '@mui/material/Box';
 import '../../stylesheets/Dashboard1.css'
 
 function createData(name, price, amount, total) {
     return { name, price, amount, total };
   }
   
-  const rows = [
+const rows = [
     createData('Apple', 120, 5.0, 600),
     createData('Google', 2000, 1, 2000),
     createData('Amazon', 130, 5, 650),
-  ];
+];
 
 function Dashboard1() {
     return (
