@@ -99,9 +99,9 @@ function Dashboard8() {
         <br></br>
         <br></br>
         <div id="outer4bottom">
-            <div class="inner4">
+            <div align="center" class="inner4">
                 <Stack spacing={0} direction="row">
-                    <Button variant="contained" onClick={() => {
+                    <Button align="center" variant="contained" onClick={() => {
                     }}>Confirm</Button>
                 </Stack>
 
