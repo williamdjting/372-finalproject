@@ -117,7 +117,7 @@ const cacheTimerInterval = () => {
 };
 
 //citation
-//dervied from: https://stackoverflow.com/questions/64873956/converting-csv-tao-json-and-putting-json-into-html-table-with-js
+//derived from: https://stackoverflow.com/questions/64873956/converting-csv-tao-json-and-putting-json-into-html-table-with-js
 const csvToJSON = (csvDataString) => {
     const rowsHeader = csvDataString.split('\r').join('').split('\n');
     const headers = rowsHeader[0].split(',');
