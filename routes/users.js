@@ -26,7 +26,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (user && await bcrypt.compare(req.body.password, user.password)) {
-        const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 500 });
+        const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 90000000 });
         res.json({ auth: true, profile: { user: user, token: token } });
     } else {
         res.json({ auth: false });

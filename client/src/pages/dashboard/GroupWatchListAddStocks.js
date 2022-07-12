@@ -7,7 +7,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import '../../stylesheets/Dashboard4.css'
 import { Card, CardContent, TextField } from '@mui/material';
 
 function createData(name, price, amount, total) {
@@ -20,11 +19,11 @@ const rows = [
     createData('Amazon', 130, 5, 650),
 ];
 
-function Dashboard4() {
+function GroupWatchListAddStocks() {
     return (
         <Card sx={{ mx: 5, my: 3 }}>
             <CardContent>
-                <h1>Create Group Watchlist</h1>
+                <h1>Add Stocks</h1>
                 {/* <div class="inner8">
                 <Box  component="form" noValidate autoComplete="off">
                             <FormControl sx={{ width: '25ch' }}>
@@ -83,4 +82,4 @@ function Dashboard4() {
     );
 }
 
-export default Dashboard4;
+export default GroupWatchListAddStocks;
