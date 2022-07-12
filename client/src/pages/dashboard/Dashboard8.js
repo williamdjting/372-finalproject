@@ -8,9 +8,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-// import FormControl, { useFormControl } from '@mui/material/FormControl';
-// import OutlinedInput from '@mui/material/OutlinedInput';
-// import Box from '@mui/material/Box';
 import '../../stylesheets/Dashboard8.css'
 
 function createData(name, price, amount, total) {
@@ -31,16 +28,6 @@ function Dashboard8() {
         <h1 id="createyourpersonalwatchlist8">Change your personal watchlist</h1>
         <br></br>
         <div id="outer8">
-            
-            {/* <div class="inner8">
-                <Box  component="form" noValidate autoComplete="off">
-                            <FormControl sx={{ width: '25ch' }}>
-                            <OutlinedInput maxlength="4" placeholder="Please enter stock ticker" />
-                            
-                        </FormControl>
-                </Box>
-
-            </div> */}
             <form class="inner8" >
                 <input id="inputboxsize8" type="text" maxlength="4" placeholder="Enter stock ticker"></input>
             </form>
@@ -55,13 +42,10 @@ function Dashboard8() {
         </div>
         <br></br>
         <br></br>
-        <TableContainer align="right" component={Paper}>
-            
-            
+        <TableContainer align="right" component={Paper}>     
         <Table  sx={{ minWidth: 400, maxWidth: 2400}} aria-label="simple table">
             <TableHead>
                 <TableRow>
-                {/* <TableCell align="left"><b></b></TableCell> */}
                 <TableCell align="left"><b>Your Stocks</b></TableCell>
                 <TableCell align="right"><b>Share Price</b></TableCell>
                 <TableCell align="right"><b>Number of Shares</b></TableCell>
@@ -69,9 +53,7 @@ function Dashboard8() {
                 <TableCell align="right"><b>Remove Stock</b></TableCell>
                 </TableRow>
             </TableHead>
-            {/* //fetch API right here inside <tablebody> and render the hook here// */}
             <TableBody>
-                
                 {rows.map((row) => (
                 <TableRow
                     key={row.name}
@@ -84,10 +66,6 @@ function Dashboard8() {
                     <TableCell align="right">{row.amount}</TableCell>
                     <TableCell align="right">{row.total}</TableCell>
                     <TableCell align="right">
-                        {/* <Stack spacing={0} direction="row">
-                            <Button variant="contained" onClick={() => {
-                            }}>Remove</Button>
-                        </Stack> */}
                     <Button variant="contained" onClick={() => {
                             }}>Remove</Button>
                     </TableCell>
@@ -104,7 +82,6 @@ function Dashboard8() {
                     <Button align="center" variant="contained" onClick={() => {
                     }}>Confirm</Button>
                 </Stack>
-
             </div>
         </div>
         <br></br>

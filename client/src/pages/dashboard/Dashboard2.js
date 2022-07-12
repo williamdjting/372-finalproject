@@ -9,10 +9,6 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-
-// import FormControl, { useFormControl } from '@mui/material/FormControl';
-// import OutlinedInput from '@mui/material/OutlinedInput';
-
 import '../../stylesheets/Dashboard2.css'
 
 function createData1(name, price, revenue, revenueGrowth, psRatio, grossProfit, ebitda, peRatio ) {
@@ -48,12 +44,9 @@ function Dashboard2() {
 
                         <div id="bloc1">
                         <TableContainer  align="right" component={Paper}>
-            
-            
             <Table  sx={{ minWidth: 150, maxWidth: 1200}} aria-label="simple table">
             <TableHead>
                 <TableRow>
-                {/* <TableCell align="left"><b></b></TableCell> */}
                 <TableCell align="left"><b>Your Stocks</b></TableCell>
                 <TableCell align="right"><b>Share Price (USD)</b></TableCell>
                 <TableCell align="right"><b>Revenue (TTM)</b></TableCell>
@@ -65,16 +58,12 @@ function Dashboard2() {
 
                 </TableRow>
             </TableHead>
-            {/* //fetch API right here inside <tablebody> and render the hook here// */}
             <TableBody>
-
-                
                 {rows1.map((row) => (
                 <TableRow
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-
                     <TableCell align="left" component="th" scope="row">
                     {row.name}
                     </TableCell>
@@ -90,50 +79,32 @@ function Dashboard2() {
             </TableBody>
             </Table>
         </TableContainer>
-
-
                         </div>
-
                     </td>
-
-
         <td>
-
             <div id="bloc2">
             <br></br>
-
             <TableContainer  align="right" component={Paper}>
-        
             <Table  sx={{ minWidth: 200, maxWidth: 600}} aria-label="simple table">
             <TableHead>
                 <TableRow>
-
                 <TableCell align="left"><b>My Groups</b></TableCell>
                 <TableCell align="left"><b>Jump To</b></TableCell>
-                
-
                 </TableRow>
             </TableHead>
-            {/* //fetch API right here inside <tablebody> and render the hook here// */}
             <TableBody>
-
-                
                 {rows2.map((row) => (
                 <TableRow
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-
                     <TableCell align="left" component="th" scope="row">
                     {row.groupName}
                     </TableCell>
                     <TableCell align="right">
-
-                    {/* <Stack spacing={0} direction="row"> */}
                     <Box sx={{ '& button': { m: 1 } }}>
                         <div>
                             <Button size="small" variant="contained" href={row.groupLink}>Select</Button>
-                        {/* </Stack> */}
                         </div>    
                     </Box>
                     </TableCell>
@@ -143,14 +114,8 @@ function Dashboard2() {
             </TableBody>
             </Table>
         </TableContainer>
-
-
             </div>
-
-
         </td>
-
-        
             </tr>
         </table>
       </div>

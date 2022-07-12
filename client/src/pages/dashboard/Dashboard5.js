@@ -10,9 +10,6 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
-// import FormControl, { useFormControl } from '@mui/material/FormControl';
-// import OutlinedInput from '@mui/material/OutlinedInput';
-
 import '../../stylesheets/Dashboard5.css'
 
 function createData1(name, price, revenue, revenueGrowth, psRatio, grossProfit, ebitda, peRatio ) {
@@ -60,7 +57,6 @@ function Dashboard5() {
                 
             <TableHead>
                 <TableRow>
-                {/* <TableCell align="left"><b></b></TableCell> */}
                 <TableCell align="left"><b>Your Stocks</b></TableCell>
                 <TableCell align="right"><b>Share Price (USD)</b></TableCell>
                 <TableCell align="right"><b>Revenue (TTM)</b></TableCell>
@@ -72,16 +68,12 @@ function Dashboard5() {
 
                 </TableRow>
             </TableHead>
-            {/* //fetch API right here inside <tablebody> and render the hook here// */}
-            <TableBody>
-
-                
+            <TableBody>    
                 {rows1.map((row) => (
                 <TableRow
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-
                     <TableCell align="left" component="th" scope="row">
                     {row.name}
                     </TableCell>
@@ -97,55 +89,34 @@ function Dashboard5() {
             </TableBody>
             </Table>
         </TableContainer>
-
-
                         </div>
-
                     </td>
-
-
         <td>
-
             <div id="bloc52">
-
-
             <TableContainer  align="right" component={Paper}>
-        
             <Table  sx={{ minWidth: 200, maxWidth: 600}} aria-label="simple table">
             <TableHead>
                 <TableRow>
-
                 <TableCell align="left"><b>Public Groups</b></TableCell>
                 <TableCell align="left"><b>Join Group</b></TableCell>
-                
-
                 </TableRow>
             </TableHead>
-            {/* //fetch API right here inside <tablebody> and render the hook here// */}
-            <TableBody>
-
-                
+            <TableBody>      
                 {rows3.map((row) => (
                 <TableRow
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-
                     <TableCell align="left" component="th" scope="row">
                     {row.groups}
                     </TableCell>
                     <TableCell align="right">
-
                     <Box sx={{ '& button': { m: 1 } }}>
                         <div>
                             <Button size="small" variant="contained">Join</Button>
-                        {/* </Stack> */}
                         </div>    
                     </Box>
-
-                    
                     </TableCell>
-
                 </TableRow>
                 ))}
             </TableBody>
@@ -158,51 +129,31 @@ function Dashboard5() {
             <Table  sx={{ minWidth: 200, maxWidth: 600}} aria-label="simple table">
             <TableHead>
                 <TableRow>
-
                 <TableCell align="left"><b>Group Members</b></TableCell>
                 <TableCell align="left"><b></b></TableCell>
-                
-
                 </TableRow>
             </TableHead>
             <TableBody>
-
-                
                 {rows2.map((row) => (
                 <TableRow
                     key={row.name}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-
                     <TableCell align="left" component="th" scope="row">
                     {row.members}
                     </TableCell>
                     <TableCell align="right">
-
-
                     </TableCell>
-
                 </TableRow>
                 ))}
             </TableBody>
             </Table>
         </TableContainer>
-
-
             </div>
-
-
         </td>
-
-        
             </tr>
-
-            <tr>
-
-
-                
+            <tr>   
             </tr>
-
         </table>
       </div>
     )

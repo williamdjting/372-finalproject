@@ -10,11 +10,7 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 
-// import FormControl, { useFormControl } from '@mui/material/FormControl';
-// import OutlinedInput from '@mui/material/OutlinedInput';
-
 import '../../stylesheets/Dashboard3.css'
-
 
 
 function Dashboard3() {
@@ -22,11 +18,9 @@ function Dashboard3() {
         <div>
         <br></br>
         <TableContainer align="center">
-            
             <Table  sx={{ minWidth: 800, maxWidth: 1200}} aria-label="simple table">
             <h1 id="blockcontainer" align="center">Create Group</h1>
             <TableBody >
-
                 <TableRow>
                     <TableCell align="center" component="th" scope="row">
                     <form>
@@ -41,11 +35,9 @@ function Dashboard3() {
                     <br></br>
                 </TableCell>
                 </TableRow>
-        
             </TableBody>
             </Table>
         </TableContainer>
-
       </div>
     )
 }
