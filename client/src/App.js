@@ -44,7 +44,7 @@ const App = () => {
                 }
               />
               <Route
-                path="dashboard/group/register"
+                path="dashboard/groups/register"
                 element={
                   <ProtectedRoute>
                     <GroupWatchListRegister />
@@ -52,7 +52,7 @@ const App = () => {
                 }
               />
               <Route
-                path="dashboard/group/addstocks"
+                path="dashboard/groups/addstocks"
                 element={
                   <ProtectedRoute>
                     <GroupWatchListAddStocks />

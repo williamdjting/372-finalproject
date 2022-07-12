@@ -11,6 +11,7 @@ const app = express();
 const port = 5000;
 
 const usersRouter = require('./routes/users');
+const groupsRouter = require('./routes/groups');
 const stockQueryRouter = require('./routes/stockquery');
 
 app.use(express.json());
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
 app.use('/users', usersRouter.routes);
+app.use('/groups', usersRouter.HasToken, groupsRouter);
 app.use('/stockquery', usersRouter.HasToken, stockQueryRouter) //remove hastoken when testing using postman
 
 app.listen(port, () => {

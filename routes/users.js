@@ -7,9 +7,9 @@ require('dotenv').config();
 
 router.post('/register', async (req, res) => {
     try {
-        const existingUser = await User.findOne({ $or: [{ email: email }, { username: username }] });
+        const existingUser = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }] });
         if (existingUser)
-            res.json({ status: 'failed' });
+            return res.json({ status: 'failed' });
 
         await User.create({
             username: req.body.username,

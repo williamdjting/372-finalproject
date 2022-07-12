@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import Loading from '../../components/Loading';
-
+import axios from 'axios';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -14,16 +14,15 @@ export default function GroupWatchListRegister() {
     const groupNameRef = useRef();
     const groupDescriptionRef = useRef();
 
-    function clearInputs() {
-        groupNameRef.current.value = '';
-        groupDescriptionRef.current.value = '';
-    }
-
     async function attemptRegister(event) {
         event.preventDefault();
 
-        // TODO: Make request
-        clearInputs();
+        setIsMakingRequesting(true);
+        await axios.post('/groups/register', {
+            name: groupNameRef.current.value,
+            description: groupDescriptionRef.current.value,
+        });
+        setIsMakingRequesting(false);
     }
 
     return (
