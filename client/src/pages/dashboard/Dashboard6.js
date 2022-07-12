@@ -12,12 +12,12 @@ import Box from '@mui/material/Box';
 import '../../stylesheets/Dashboard6.css'
 
 const rows1 = [
-    {name: 'Tech Stocks'},{name: 'Value Stocks'},
+    {name: 'Tech Stocks', description: 'a group for techies'},{name: 'Value Stocks', description: 'a group for value investors'}
 
 ];
 
 const rows2 = [
-    {name: 'Default Watchlist'}
+    {name: 'Default Watchlist', description: 'your personal watchlist'}
 
 ];
 
@@ -36,6 +36,7 @@ function Dashboard6() {
                         <TableHead>
                             <TableRow>
                             <TableCell align="left"><b>Personal Watchlist</b></TableCell>
+                            <TableCell align="left"><b></b></TableCell>
                             <TableCell align="right"><b>Change Watchlist</b></TableCell>
                             <TableCell align="right"><b>Delete Watchlist</b></TableCell>
                             </TableRow>
@@ -47,13 +48,17 @@ function Dashboard6() {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell align="left" component="th" scope="row">
-                                Default Watchlist
+                                Your Watchlist
+                                </TableCell>
+                                <TableCell align="left" component="th" scope="row">
+                                {row.description}   
                                 </TableCell>
                                 <TableCell align="right">
                         <div>
                             <Button size="small" variant="contained" href="/dashboard8" >Change</Button>
                         </div>    
                                 </TableCell>
+                                
                                 <TableCell align="right">
                         <div>
                         </div>    
@@ -75,6 +80,7 @@ function Dashboard6() {
                     <TableHead>
                         <TableRow>
                         <TableCell align="left"><b>Group Watchlists</b></TableCell>
+                        <TableCell align="left"><b>Group Description</b></TableCell>
                         <TableCell align="right"><b>Change Watchlist</b></TableCell>
                         <TableCell align="right"><b>Delete Watchlist</b></TableCell>
                         </TableRow>
@@ -87,6 +93,9 @@ function Dashboard6() {
                         >
                             <TableCell align="left" component="th" scope="row">
                             {row.name}
+                            </TableCell>
+                            <TableCell align="left" component="th" scope="row">
+                            {row.description}
                             </TableCell>
                             <TableCell align="right">
                     <div>
