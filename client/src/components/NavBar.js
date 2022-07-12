@@ -6,7 +6,15 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 
-export default function NavBar() {
+export default function NavBar(props) {
+    function navItems() {
+        return <>
+            <Button color="inherit">Insights</Button>
+            <Button color="inherit">WatchLists</Button>
+            <Button color="inherit">Logout</Button>
+        </>
+    }
+
     return (
         <Container maxWidth="lg" sx={{ my: 3 }}>
             <Box sx={{ flexGrow: 1 }}>
@@ -15,9 +23,7 @@ export default function NavBar() {
                         <Typography variant="h4" sx={{ flexGrow: 1 }}>
                             Group Stock
                         </Typography>
-                        <Button color="inherit">Insights</Button>
-                        <Button color="inherit">WatchLists</Button>
-                        <Button color="inherit">Logout</Button>
+                        {props.hidden ? <></> : navItems()}
                     </Toolbar>
                 </AppBar>
             </Box>

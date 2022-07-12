@@ -29,7 +29,6 @@ export default function GroupWatchListRegister() {
         isMakingRequesting ? <Loading />
             : <Container maxWidth="xs">
                 <Box sx={{
-                    marginTop: 3,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',

@@ -9,8 +9,7 @@ import WatchLists from './pages/dashboard/WatchLists';
 import Dashboard7 from './pages/dashboard/Dashboard7';
 import Dashboard8 from './pages/dashboard/Dashboard8';
 import Dashboard9 from './pages/dashboard/Dashboard9';
-import WithoutNav from './components/WithoutNav';
-import WithNav from './components/WithNav';
+import NavWithContainer from './components/NavWithContainer';
 import Loading from './components/Loading';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import GroupWatchListView from './pages/dashboard/GroupWatchListView';
@@ -32,7 +31,7 @@ const App = () => {
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route element={<WithNav />}>
+            <Route element={<NavWithContainer />}>
               <Route
                 path="dashboard"
                 element={
@@ -67,11 +66,11 @@ const App = () => {
               />
             </Route>
 
-            <Route element={<WithoutNav />}>
+            <Route element={<NavWithContainer hidden={true} />}>
               <Route exact path='/' element={<LoginRegister />} />
             </Route>
 
-            <Route element={<WithNav />}>
+            <Route element={<NavWithContainer />}>
               <Route exact path='/dashboard1' element={<Dashboard1 />} />
               <Route exact path='/dashboard2' element={<Dashboard2 />} />
               <Route exact path='/dashboard7' element={<Dashboard7 />} />
