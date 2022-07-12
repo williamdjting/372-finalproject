@@ -1,22 +1,20 @@
-#outer1
+/* #outer7
 {
     width:100%;
     text-align: center;
-    display: inline-block;
-}
-.inner1
+} */
+/* .inner3
 {
     display: inline-block;
-}
-
-#createyourpersonalwatchlist1 {
+} */
+/* 
+#createyourpersonalwatchlist7 {
     text-align: center;
-}
+} */
 
-#inputboxsize1 {
+#inputboxsize3 {
     height: 40px;
     width: 150px;
     text-align: center;
     font-size: 16px;
 }
-

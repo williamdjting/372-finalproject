@@ -1,5 +1,8 @@
 import React from 'react'
 import '../../stylesheets/navbar.css';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+
+
 
 
 const NavBar = () => {

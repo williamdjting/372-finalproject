@@ -1,0 +1,16 @@
+.col9 {
+  float: center;
+  width: 33.33%;
+  padding: 10px;
+  max-height: 200px;
+  max-width: 150px;
+  overflow: auto;
+
+}
+
+/* Clear floats after the columns */
+.row9:after {
+  content: "";
+  display: table;
+  clear: both;
+}

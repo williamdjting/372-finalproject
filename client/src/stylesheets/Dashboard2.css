@@ -1,0 +1,21 @@
+#block_container {
+  text-align:center;
+}
+/* 
+.dashboard2table {
+  overflow: auto;
+} */
+
+#bloc1
+{
+    display:inline-block;
+    width: 95%;
+}
+
+
+#bloc2
+{
+    display:inline-block;
+    width: 100%; 
+
+}
