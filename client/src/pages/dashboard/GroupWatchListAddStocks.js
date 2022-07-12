@@ -19,7 +19,7 @@ const rows = [
     createData('Amazon', 130, 5, 650),
 ];
 
-function GroupWatchListAddStocks() {
+export default function GroupWatchListAddStocks() {
     return (
         <Card sx={{ mx: 5, my: 3 }}>
             <CardContent>
@@ -81,5 +81,3 @@ function GroupWatchListAddStocks() {
         </Card>
     );
 }
-
-export default GroupWatchListAddStocks;

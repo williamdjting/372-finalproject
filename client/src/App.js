@@ -4,7 +4,7 @@ import LoginRegister from './pages/LoginRegister';
 import Dashboard from './pages/dashboard/Dashboard';
 import Dashboard1 from './pages/dashboard/Dashboard1';
 import Dashboard2 from './pages/dashboard/Dashboard2';
-import Dashboard3 from './pages/dashboard/Dashboard3';
+import GroupWatchListRegister from './pages/dashboard/GroupWatchListRegister';
 import GroupWatchListAddStocks from './pages/dashboard/GroupWatchListAddStocks';
 import Dashboard5 from './pages/dashboard/Dashboard5';
 import Dashboard6 from './pages/dashboard/Dashboard6';
@@ -44,6 +44,14 @@ const App = () => {
                 }
               />
               <Route
+                path="dashboard/group/register"
+                element={
+                  <ProtectedRoute>
+                    <GroupWatchListRegister />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="dashboard/group/addstocks"
                 element={
                   <ProtectedRoute>
@@ -60,7 +68,6 @@ const App = () => {
             <Route element={<WithNav />}>
               <Route exact path='/dashboard1' element={<Dashboard1 />} />
               <Route exact path='/dashboard2' element={<Dashboard2 />} />
-              <Route exact path='/dashboard3' element={<Dashboard3 />} />
               <Route exact path='/dashboard5' element={<Dashboard5 />} />
               <Route exact path='/dashboard6' element={<Dashboard6 />} />
               <Route exact path='/dashboard7' element={<Dashboard7 />} />
