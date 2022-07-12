@@ -5,16 +5,16 @@ import Dashboard from './pages/dashboard/Dashboard';
 import Dashboard1 from './pages/dashboard/Dashboard1';
 import Dashboard2 from './pages/dashboard/Dashboard2';
 import GroupWatchListRegister from './pages/dashboard/GroupWatchListRegister';
-import GroupWatchListAddStocks from './pages/dashboard/GroupWatchListAddStocks';
-import Dashboard5 from './pages/dashboard/Dashboard5';
-import Dashboard6 from './pages/dashboard/Dashboard6';
+import GroupWatchListManage from './pages/dashboard/GroupWatchListManage';
+import WatchLists from './pages/dashboard/WatchLists';
 import Dashboard7 from './pages/dashboard/Dashboard7';
 import Dashboard8 from './pages/dashboard/Dashboard8';
 import Dashboard9 from './pages/dashboard/Dashboard9';
-import WithoutNav from './pages/accessories/WithoutNav';
-import WithNav from './pages/accessories/WithNav';
+import WithoutNav from './components/WithoutNav';
+import WithNav from './components/WithNav';
 import Loading from './components/Loading';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import GroupWatchListView from './pages/dashboard/GroupWatchListView';
 
 const ProtectedRoute = ({ children, redirectPath = '/' }) => {
   const { currentUser, isLoading } = useAuth();
@@ -44,6 +44,22 @@ const App = () => {
                 }
               />
               <Route
+                path="dashboard/watchlists"
+                element={
+                  <ProtectedRoute>
+                    <WatchLists />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="dashboard/groups/view/:name"
+                element={
+                  <ProtectedRoute>
+                    <GroupWatchListView />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="dashboard/groups/register"
                 element={
                   <ProtectedRoute>
@@ -52,10 +68,10 @@ const App = () => {
                 }
               />
               <Route
-                path="dashboard/groups/addstocks"
+                path="dashboard/groups/manage"
                 element={
                   <ProtectedRoute>
-                    <GroupWatchListAddStocks />
+                    <GroupWatchListManage />
                   </ProtectedRoute>
                 }
               />
@@ -68,8 +84,6 @@ const App = () => {
             <Route element={<WithNav />}>
               <Route exact path='/dashboard1' element={<Dashboard1 />} />
               <Route exact path='/dashboard2' element={<Dashboard2 />} />
-              <Route exact path='/dashboard5' element={<Dashboard5 />} />
-              <Route exact path='/dashboard6' element={<Dashboard6 />} />
               <Route exact path='/dashboard7' element={<Dashboard7 />} />
               <Route exact path='/dashboard8' element={<Dashboard8 />} />
               <Route exact path='/dashboard9' element={<Dashboard9 />} />
