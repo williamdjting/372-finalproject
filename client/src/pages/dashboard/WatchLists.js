@@ -28,12 +28,12 @@ export default function WatchLists() {
     }
 
     return (
-        <Container maxWidth="lg" sx={{ my: 3 }}>
+        <div>
             <Typography gutterBottom variant="h5">Personal WatchList</Typography>
             {createWatchList("Personal WatchList", "This is your personal watchlist", "/dashboard2")}
 
             <Typography gutterBottom variant="h5">Group WatchLists</Typography>
             {createWatchList("Tech Grind", "This is a tech related watchlist", "/dashboard/groups/view/Name")}
-        </Container>
+        </div>
     )
 }

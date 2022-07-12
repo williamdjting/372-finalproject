@@ -6,8 +6,10 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+import Link from '@mui/material/Link';
 
 function createData1(name, price, revenue, revenueGrowth, psRatio, grossProfit, ebitda, peRatio) {
     return {
@@ -27,8 +29,12 @@ function createData2(members) {
 export default function GroupWatchListView() {
     const { name } = useParams();
     return (
-        <Container maxWidth="lg" sx={{ my: 3 }}>
-            <TableContainer align="right" component={Paper}>
+        <div>
+            <Link underline='none' component={RouterLink} to={"/dashboard/groups/view/Name/manage"}>
+                <Button onClick={() => { }}>Manage Group</Button>
+            </Link>
+
+            <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 150, maxWidth: 1200 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -63,6 +69,6 @@ export default function GroupWatchListView() {
                     </TableBody>
                 </Table>
             </TableContainer>
-        </Container>
+        </div>
     )
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import LoginRegister from './pages/LoginRegister';
-import Dashboard from './pages/dashboard/Dashboard';
 import Dashboard1 from './pages/dashboard/Dashboard1';
 import Dashboard2 from './pages/dashboard/Dashboard2';
 import GroupWatchListRegister from './pages/dashboard/GroupWatchListRegister';
@@ -33,29 +32,12 @@ const App = () => {
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-
             <Route element={<WithNav />}>
               <Route
                 path="dashboard"
                 element={
                   <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="dashboard/watchlists"
-                element={
-                  <ProtectedRoute>
                     <WatchLists />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="dashboard/groups/view/:name"
-                element={
-                  <ProtectedRoute>
-                    <GroupWatchListView />
                   </ProtectedRoute>
                 }
               />
@@ -68,7 +50,15 @@ const App = () => {
                 }
               />
               <Route
-                path="dashboard/groups/manage"
+                path="dashboard/groups/view/:name"
+                element={
+                  <ProtectedRoute>
+                    <GroupWatchListView />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="dashboard/groups/view/:name/manage"
                 element={
                   <ProtectedRoute>
                     <GroupWatchListManage />
@@ -88,7 +78,6 @@ const App = () => {
               <Route exact path='/dashboard8' element={<Dashboard8 />} />
               <Route exact path='/dashboard9' element={<Dashboard9 />} />
             </Route>
-
           </Routes>
         </AuthProvider>
       </BrowserRouter>
