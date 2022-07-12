@@ -7,7 +7,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { Card, CardContent, TextField } from '@mui/material';
 
 function createData(name, price, amount, total) {
@@ -24,15 +23,12 @@ export default function GroupWatchListManage() {
     return (
         <Card>
             <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                    Group Name
-                </Typography>
                 <Box display="flex" alignItems="center" >
                     <TextField id="outlined-basic" label="Stock Ticker" variant="outlined" />
                     <Button variant="contained" sx={{ mx: 1, py: 2 }} onClick={() => { }}>Add</Button>
                 </Box>
                 <TableContainer align="right">
-                    <Table sx={{ minWidth: 400, maxWidth: 2400 }} aria-label="simple table">
+                    <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell align="left"><b>Your Stocks</b></TableCell>
@@ -43,7 +39,6 @@ export default function GroupWatchListManage() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-
                             {rows.map((row) => (
                                 <TableRow
                                     key={row.name}
