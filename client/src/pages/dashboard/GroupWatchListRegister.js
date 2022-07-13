@@ -8,8 +8,10 @@ import Box from '@mui/material/Box';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert';
 
 export default function GroupWatchListRegister() {
+    const [showAlert, setShowAlert] = useState(null);
     const [isMakingRequesting, setIsMakingRequesting] = useState(false);
     const groupNameRef = useRef();
     const groupDescriptionRef = useRef();
@@ -18,11 +20,14 @@ export default function GroupWatchListRegister() {
         event.preventDefault();
 
         setIsMakingRequesting(true);
-        await axios.post('/groups/register', {
+        const res = await axios.post('/groups/register', {
             name: groupNameRef.current.value,
             description: groupDescriptionRef.current.value,
         });
         setIsMakingRequesting(false);
+
+        if (res.data.error)
+            setShowAlert(res.data.error);
     }
 
     return (
@@ -73,6 +78,7 @@ export default function GroupWatchListRegister() {
                         </Box>
                     </>
                 </Box>
+                {showAlert && <Alert severity='error' onClose={() => setShowAlert(null)} > {showAlert} </Alert>}
             </Container>
     );
 }

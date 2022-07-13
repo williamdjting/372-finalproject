@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
     try {
         const existingUser = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }] });
         if (existingUser)
-            return res.json({ success: false });
+            return res.json({ success: false, error: "User email and username already exists!" });
 
         await User.create({
             username: req.body.username,
@@ -19,7 +19,7 @@ router.post('/register', async (req, res) => {
         });
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false });
+        res.json({ success: false, error: err });
     }
 });
 
@@ -27,30 +27,30 @@ router.post('/login', async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (user && await bcrypt.compare(req.body.password, user.password)) {
         const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 90000000 });
-        res.json({ auth: true, profile: { user: user, token: token } });
+        res.json({ success: true, profile: { user: user, token: token } });
     } else {
-        res.json({ auth: false });
+        res.json({ success: false, error: "Invalid email or password!" });
     }
 });
 
 router.get('/isLoggedIn', HasToken, async (req, res) => {
     if (req.user)
-        return res.json({ auth: true, profile: req.user });
+        return res.json({ success: true, profile: req.user });
     else
-        return res.json({ auth: false });
+        return res.json({ success: false });
 });
 
 function HasToken(req, res, next) {
     const token = req.header('x-auth-token');
     if (!token)
-        return res.json({ auth: false });
+        return res.json({ success: false });
 
     try {
         const jwtUser = jwt.verify(token, process.env.JWT_SECRET);
         req.user = jwtUser.user;
         next();
     } catch (error) {
-        return res.json({ auth: false });
+        return res.json({ success: false });
     }
 };
 

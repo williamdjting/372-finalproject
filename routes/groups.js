@@ -7,7 +7,7 @@ router.post('/register', async (req, res) => {
     try {
         const existingGroup = await Group.findOne({ name: req.body.name });
         if (existingGroup)
-            return res.json({ success: false });
+            return res.json({ success: false, error: "Group already exists!" });
 
         await Group.create({
             name: req.body.name,
@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
         });
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false });
+        res.json({ success: false, error: err });
     }
 });
 
@@ -43,10 +43,16 @@ router.post('/leave', async (req, res) => {
             return res.json({ success: false });
 
         existingGroup.members = existingGroup.members.filter((member) => member !== req.user.username);
-        if (existingGroup.admin === req.user.username)
+
+        if (existingGroup.members.length === 0) {
             await existingGroup.delete();
-        else
-            await existingGroup.save();
+            return res.json({ success: true });
+        }
+
+        if (existingGroup.admin === req.user.username)
+            existingGroup.admin = existingGroup.members[0];
+
+        await existingGroup.save();
 
         res.json({ success: true });
     } catch (err) {
