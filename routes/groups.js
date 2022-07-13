@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
         });
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, error: err });
+        res.json({ success: false, error: "Unknown error!" });
     }
 });
 
@@ -82,6 +82,18 @@ router.get('/all', async (req, res) => {
         return res.json({ success: true, groups });
     }
     catch (err) {
+        res.json({ success: false });
+    }
+});
+
+router.get('/get', async (req, res) => {
+    try {
+        const existingGroup = await Group.findOne({ name: req.query.name });
+        if (!existingGroup)
+            return res.json({ success: false });
+
+        res.json({ success: true, group: existingGroup });
+    } catch (err) {
         res.json({ success: false });
     }
 });

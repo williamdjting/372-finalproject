@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState, useEffect } from "react";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -14,7 +14,10 @@ import Box from '@mui/material/Box';
 import Add from '@mui/icons-material/Add';
 import Delete from '@mui/icons-material/Delete';
 import Typography from '@mui/material/Typography';
+import axios from 'axios';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import Loading from "../../components/Loading";
 
 function stockModel(name, price, revenue, revenueGrowth, psRatio, grossProfit, ebitda, peRatio) {
     return { name, price, revenue, revenueGrowth, psRatio, grossProfit, ebitda, peRatio }
@@ -33,8 +36,27 @@ const memberData = [
 ]
 
 export default function GroupWatchListView() {
+    const [group, setGroup] = useState();
+    const [isLoading, setIsLoading] = useState(true);
+    const navigate = new useNavigate();
     const { name } = useParams();
     const isAdmin = true;
+
+    useEffect(() => {
+        getGroup();
+    }, []);
+
+    async function getGroup() {
+        await axios.get('/groups/get', {
+            params: { name: name }
+        }).then((res) => {
+            setGroup(res.data.group);
+            setIsLoading(false);
+        }).catch((err) => {
+            setIsLoading(false);
+            navigate('/dashboard');
+        });
+    }
 
     function memberManager() {
         return <>
@@ -44,7 +66,7 @@ export default function GroupWatchListView() {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell align="left"><b>Name</b></TableCell>
+                                    <TableCell align="left"><b>{group.name}</b></TableCell>
                                     <TableCell align="right"><b>Remove Member</b></TableCell>
                                 </TableRow>
                             </TableHead>
@@ -121,7 +143,7 @@ export default function GroupWatchListView() {
     }
 
     return (
-        <div>
+        isLoading ? <Loading /> : <div>
             <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>{name}</Typography>
             <TableContainer component={Paper} sx={{ mb: 3 }}>
                 <Table>
