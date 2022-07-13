@@ -12,7 +12,8 @@ router.post('/register', async (req, res) => {
         await Group.create({
             name: req.body.name,
             description: req.body.description,
-            memberUsernames: [req.user.username],
+            admin: req.user.username,
+            members: [req.user.username],
             stockList: []
         });
         res.json({ success: true });

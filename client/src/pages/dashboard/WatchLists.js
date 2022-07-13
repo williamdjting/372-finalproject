@@ -5,8 +5,8 @@ import Typography from '@mui/material/Typography';
 import Button from "@mui/material/Button";
 import Person from '@mui/icons-material/Person';
 import GroupAdd from '@mui/icons-material/GroupAdd';
-import Grid from '@mui/material/Grid';
 import Add from '@mui/icons-material/Add';
+import Delete from '@mui/icons-material/Delete';
 import Graph from '@mui/icons-material/Timeline';
 import Remove from '@mui/icons-material/Remove';
 import Loading from '../../components/Loading';
@@ -35,9 +35,10 @@ export default function WatchLists() {
     }
 
     function createGroup(group) {
-        const isMember = group.memberUsernames.includes(currentUser.username);
+        const isMember = group.members.includes(currentUser.username);
+        const isAdmin = group.admin === currentUser.username;
         return (
-            <Card key={group.name} sx={{ mb: 3, maxWidth: 500 }} align="left">
+            <Card key={group.name} sx={{ mb: 3 }} align="left">
                 <CardContent>
                     <Typography gutterBottom variant="h6" component="div">
                         {group.name}
@@ -54,6 +55,8 @@ export default function WatchLists() {
                         </>
                         : <Button variant="outlined" color="primary" startIcon={<Add />}>Join</Button>
                     }
+                    {isAdmin ? <Button variant="outlined" color="error" startIcon={<Delete />}>Delete</Button>
+                        : <></>}
                 </CardActions>
             </Card >
         )
@@ -61,7 +64,7 @@ export default function WatchLists() {
 
     return (
         isLoading ? <Loading /> :
-            <div align="center">
+            <div>
                 <div>
                     <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Personal WatchList</Typography>
                     <Link underline='none' component={RouterLink} to={"/dashboard2"}>
