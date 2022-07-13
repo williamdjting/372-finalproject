@@ -34,7 +34,7 @@ function NavBar(props) {
                             edge="start"
                             color="inherit"
                             aria-label="menu"
-                            component={RouterLink} to="/dashboard"
+                            component={RouterLink} to={props.hidden ? "/" : "/dashboard"}
                         >
                             <HomeIcon />
                         </IconButton>

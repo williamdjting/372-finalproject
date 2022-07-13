@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useContext, useState, useEffect } from "react"
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -7,12 +7,35 @@ import Person from '@mui/icons-material/Person';
 import GroupAdd from '@mui/icons-material/GroupAdd';
 import Grid from '@mui/material/Grid';
 import Add from '@mui/icons-material/Add';
+import Remove from '@mui/icons-material/Remove';
+import Loading from '../../components/Loading';
 import { CardActionArea } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
+import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
 
 export default function WatchLists() {
-    function createJoinableGroup(name, description) {
+    const { currentUser } = useAuth();
+    const [groupData, setGroupData] = useState([]);
+    const [joinedGroupData, setJoinedGroupData] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        getGroups();
+    }, []);
+
+    async function getGroups() {
+        await axios.get('/groups/all').then((res) => {
+            setGroupData(res.data.groups);
+            setJoinedGroupData(res.data.groups.filter((group) => group.memberUsernames.includes(currentUser.username)));
+            setIsLoading(false);
+        }).catch((err) => {
+            setIsLoading(false);
+        });
+    }
+
+    function createJoinableGroup(name, description, isMember) {
         return (
             <Card sx={{ mb: 3 }}>
                 <CardContent>
@@ -26,7 +49,9 @@ export default function WatchLists() {
                             </Typography>
                         </Grid>
                         <Grid item xs={2} align="center">
-                            <Button variant="contained" color="primary" startIcon={<Add />}>Join</Button>
+                            {isMember ? <Button variant="contained" color="primary" startIcon={<Remove />}>Leave</Button>
+                                : <Button variant="contained" color="primary" startIcon={<Add />}>Join</Button>
+                            }
                         </Grid>
                     </Grid>
                 </CardContent>
@@ -36,7 +61,7 @@ export default function WatchLists() {
 
     function createGroup(name, description, route) {
         return (
-            <Card sx={{ mb: 3 }}>
+            <Card key={name} sx={{ mb: 3 }}>
                 <Link underline='none' component={RouterLink} to={route}>
                     <CardActionArea>
                         <CardContent>
@@ -54,7 +79,7 @@ export default function WatchLists() {
     }
 
     return (
-        <div>
+        isLoading ? <Loading /> : <div>
             <div>
                 <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Personal WatchList</Typography>
                 <Link underline='none' component={RouterLink} to={"/dashboard2"}>
@@ -69,13 +94,16 @@ export default function WatchLists() {
                     <Button variant="contained" color="primary" sx={{ mb: 1 }} startIcon={<GroupAdd />}>Register New Group</Button>
                 </Link>
 
-                {createGroup("Tech Stocks", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.", "/dashboard/groups/view/TechStocks")}
-                {createGroup("Crypto Bros", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.", "/dashboard/groups/view/TechStocks")}
+                {joinedGroupData.map((group) => {
+                    return createGroup(group.name, group.description, `/dashboard/groups/view/${group.name}`)
+                })}
             </div>
 
             <div>
                 <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Public WatchLists</Typography>
-                {createJoinableGroup("Tech Stocks 2", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.", "/dashboard/groups/view/TechStocks")}
+                {groupData.map((group) => {
+                    return createJoinableGroup(group.name, group.description, joinedGroupData.includes(group))
+                })}
             </div>
         </div>
     )

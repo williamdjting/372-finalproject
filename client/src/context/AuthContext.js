@@ -27,7 +27,7 @@ export function AuthProvider({ children }) {
 
     async function checkAuth() {
         await axios.get('/users/isLoggedIn').then((res) => {
-            setCurrentUser(res.data.auth);
+            setCurrentUser(res.data.profile);
             setIsLoading(false);
         }).catch((err) => {
             setCurrentUser();

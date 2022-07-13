@@ -9,7 +9,7 @@ router.post('/register', async (req, res) => {
     try {
         const existingUser = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }] });
         if (existingUser)
-            return res.json({ status: 'failed' });
+            return res.json({ success: false });
 
         await User.create({
             username: req.body.username,
@@ -17,9 +17,9 @@ router.post('/register', async (req, res) => {
             password: req.body.password,
             stockCodes: []
         });
-        res.json({ status: 'success' });
+        res.json({ success: true });
     } catch (err) {
-        res.json({ status: 'failed' });
+        res.json({ success: false });
     }
 });
 
@@ -35,7 +35,7 @@ router.post('/login', async (req, res) => {
 
 router.get('/isLoggedIn', HasToken, async (req, res) => {
     if (req.user)
-        return res.json({ auth: true });
+        return res.json({ auth: true, profile: req.user });
     else
         return res.json({ auth: false });
 });
