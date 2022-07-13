@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useState, useEffect } from "react";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
@@ -34,6 +34,24 @@ export default function WatchLists() {
         });
     }
 
+    async function leaveGroup(name) {
+        const res = await axios.post('/groups/leave', {
+            name: name,
+        });
+
+        if (res.data.success)
+            getGroups();
+    }
+
+    async function deleteGroup(name) {
+        const res = await axios.post('/groups/delete', {
+            name: name,
+        });
+
+        if (res.data.success)
+            getGroups();
+    }
+
     function createGroup(group) {
         const isMember = group.members.includes(currentUser.username);
         const isAdmin = group.admin === currentUser.username;
@@ -51,11 +69,11 @@ export default function WatchLists() {
                     {isMember ?
                         <>
                             <Button variant="outlined" color="primary" component={RouterLink} to={`groups/view/${group.name}`} startIcon={<Graph />} sx={{ mr: 1 }}>View</Button>
-                            <Button variant="outlined" color="error" startIcon={<Remove />}>Leave</Button>
+                            <Button variant="outlined" color="error" startIcon={<Remove />} onClick={() => { leaveGroup(group.name) }}>Leave</Button>
                         </>
                         : <Button variant="outlined" color="primary" startIcon={<Add />}>Join</Button>
                     }
-                    {isAdmin ? <Button variant="outlined" color="error" startIcon={<Delete />}>Delete</Button>
+                    {isAdmin ? <Button variant="outlined" color="error" startIcon={<Delete />} onClick={() => { deleteGroup(group.name) }}>Delete</Button>
                         : <></>}
                 </CardActions>
             </Card >
