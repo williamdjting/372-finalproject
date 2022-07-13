@@ -34,6 +34,15 @@ export default function WatchLists() {
         });
     }
 
+    async function joinGroup(name) {
+        const res = await axios.post('/groups/join', {
+            name: name,
+        });
+
+        if (res.data.success)
+            getGroups();
+    }
+
     async function leaveGroup(name) {
         const res = await axios.post('/groups/leave', {
             name: name,
@@ -71,7 +80,7 @@ export default function WatchLists() {
                             <Button variant="outlined" color="primary" component={RouterLink} to={`groups/view/${group.name}`} startIcon={<Graph />} sx={{ mr: 1 }}>View</Button>
                             <Button variant="outlined" color="error" startIcon={<Remove />} onClick={() => { leaveGroup(group.name) }}>Leave</Button>
                         </>
-                        : <Button variant="outlined" color="primary" startIcon={<Add />}>Join</Button>
+                        : <Button variant="outlined" color="primary" startIcon={<Add />} onClick={() => { joinGroup(group.name) }}>Join</Button>
                     }
                     {isAdmin ? <Button variant="outlined" color="error" startIcon={<Delete />} onClick={() => { deleteGroup(group.name) }}>Delete</Button>
                         : <></>}

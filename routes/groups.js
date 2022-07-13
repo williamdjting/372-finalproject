@@ -22,6 +22,20 @@ router.post('/register', async (req, res) => {
     }
 });
 
+router.post('/join', async (req, res) => {
+    try {
+        const existingGroup = await Group.findOne({ name: req.body.name });
+        if (!existingGroup || existingGroup.members.includes(req.user.username))
+            return res.json({ success: false });
+
+        existingGroup.members.push(req.user.username);
+        await existingGroup.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false });
+    }
+});
+
 router.post('/leave', async (req, res) => {
     try {
         const existingGroup = await Group.findOne({ name: req.body.name });
