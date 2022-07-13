@@ -4,7 +4,6 @@ import LoginRegister from './pages/LoginRegister';
 import Dashboard1 from './pages/dashboard/Dashboard1';
 import Dashboard2 from './pages/dashboard/Dashboard2';
 import GroupWatchListRegister from './pages/dashboard/GroupWatchListRegister';
-import GroupWatchListManage from './pages/dashboard/GroupWatchListManage';
 import WatchLists from './pages/dashboard/WatchLists';
 import Dashboard7 from './pages/dashboard/Dashboard7';
 import Dashboard8 from './pages/dashboard/Dashboard8';
@@ -53,14 +52,6 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <GroupWatchListView />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="dashboard/groups/view/:name/manage"
-                element={
-                  <ProtectedRoute>
-                    <GroupWatchListManage />
                   </ProtectedRoute>
                 }
               />
