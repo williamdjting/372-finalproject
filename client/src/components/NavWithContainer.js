@@ -9,13 +9,18 @@ import IconButton from '@mui/material/IconButton';
 import HomeIcon from '@mui/icons-material/Home';
 import { Link as RouterLink } from 'react-router-dom';
 import { Outlet } from 'react-router';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function NavBar(props) {
+    const navigate = new useNavigate();
+    const { logout } = useAuth();
+
     function navItems() {
         return <>
             <Button color="inherit">Insights</Button>
             <Button color="inherit">WatchLists</Button>
-            <Button color="inherit">Logout</Button>
+            <Button color="inherit" onClick={() => { logout(); navigate("/"); }}>Logout</Button>
         </>
     }
 

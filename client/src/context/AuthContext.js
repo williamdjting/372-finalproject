@@ -47,6 +47,10 @@ export function AuthProvider({ children }) {
         });
     }
 
+    function logout() {
+        localStorage.removeItem('profile');
+    }
+
     async function register(email, username, password) {
         await axios.post('/users/register', {
             username: username,
@@ -59,6 +63,7 @@ export function AuthProvider({ children }) {
         currentUser,
         isLoading,
         login,
+        logout,
         register,
     }
 
