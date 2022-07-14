@@ -8,3 +8,4 @@ client/node_modules
 *.swp
 *.swo
 .env
+app.yaml
