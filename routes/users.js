@@ -7,9 +7,9 @@ require('dotenv').config();
 
 router.post('/register', async (req, res) => {
     try {
-        const existingUser = await User.findOne({ $or: [{ email: email }, { username: username }] });
+        const existingUser = await User.findOne({ $or: [{ email: req.body.email }, { username: req.body.username }] });
         if (existingUser)
-            res.json({ status: 'failed' });
+            return res.json({ success: false, error: "User email and username already exists!" });
 
         await User.create({
             username: req.body.username,
@@ -17,40 +17,40 @@ router.post('/register', async (req, res) => {
             password: req.body.password,
             stockCodes: []
         });
-        res.json({ status: 'success' });
+        res.json({ success: true });
     } catch (err) {
-        res.json({ status: 'failed' });
+        res.json({ success: false, error: "Unknown error!" });
     }
 });
 
 router.post('/login', async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
     if (user && await bcrypt.compare(req.body.password, user.password)) {
-        const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 500 });
-        res.json({ auth: true, profile: { user: user, token: token } });
+        const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 90000000 });
+        res.json({ success: true, profile: { user: user, token: token } });
     } else {
-        res.json({ auth: false });
+        res.json({ success: false, error: "Invalid email or password!" });
     }
 });
 
 router.get('/isLoggedIn', HasToken, async (req, res) => {
     if (req.user)
-        return res.json({ auth: true });
+        return res.json({ success: true, profile: req.user });
     else
-        return res.json({ auth: false });
+        return res.json({ success: false });
 });
 
 function HasToken(req, res, next) {
     const token = req.header('x-auth-token');
     if (!token)
-        return res.json({ auth: false });
+        return res.json({ success: false });
 
     try {
         const jwtUser = jwt.verify(token, process.env.JWT_SECRET);
         req.user = jwtUser.user;
         next();
     } catch (error) {
-        return res.json({ auth: false });
+        return res.json({ success: false });
     }
 };
 

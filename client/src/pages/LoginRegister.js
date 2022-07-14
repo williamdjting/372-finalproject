@@ -12,8 +12,10 @@ import Box from '@mui/material/Box';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Alert from '@mui/material/Alert';
 
 function Login() {
+    const [showAlert, setShowAlert] = useState(null);
     const [isViewingLogin, setIsViewingLogin] = useState(true);
     const [isMakingRequesting, setIsMakingRequesting] = useState(false);
     const emailRef = useRef();
@@ -22,28 +24,30 @@ function Login() {
     const { login, register } = useAuth();
     const navigate = new useNavigate();
 
-    function clearInputs() {
-        emailRef.current.value = '';
-        usernameRef.current.value = '';
-        passwordRef.current.value = '';
-    }
-
     async function attemptLogin(event) {
         event.preventDefault();
 
         setIsMakingRequesting(true);
-        await login(emailRef.current.value, passwordRef.current.value);
+        const res = await login(emailRef.current.value, passwordRef.current.value);
         setIsMakingRequesting(false);
 
-        navigate('/dashboard');
+        if (res.data.error)
+            setShowAlert(res.data.error);
+        else
+            navigate('/dashboard');
     }
 
     async function attemptRegister(event) {
         event.preventDefault();
 
-        await register(emailRef.current.value, usernameRef.current.value, passwordRef.current.value);
-        clearInputs();
-        setIsViewingLogin(true);
+        setIsMakingRequesting(true);
+        const res = await register(emailRef.current.value, usernameRef.current.value, passwordRef.current.value);
+        setIsMakingRequesting(false);
+
+        if (res.data.error)
+            setShowAlert(res.data.error);
+        else
+            setIsViewingLogin(true);
     }
 
     function loginPage() {
@@ -166,13 +170,13 @@ function Login() {
         isMakingRequesting ? <Loading />
             : <Container maxWidth="xs">
                 <Box sx={{
-                    marginTop: 8,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                 }}>
                     {isViewingLogin ? loginPage() : registerPage()}
                 </Box>
+                {showAlert && <Alert severity='error' onClose={() => setShowAlert(null)} > {showAlert} </Alert>}
             </Container>
     );
 }

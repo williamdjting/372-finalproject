@@ -27,28 +27,34 @@ export function AuthProvider({ children }) {
 
     async function checkAuth() {
         await axios.get('/users/isLoggedIn').then((res) => {
-            setCurrentUser(res.data.auth);
+            setCurrentUser(res.data.profile);
             setIsLoading(false);
         }).catch((err) => {
-            setCurrentUser();
+            setCurrentUser(null);
             setIsLoading(false);
         })
     }
 
     async function login(email, password) {
-        await axios.post('/users/login', {
+        const res = await axios.post('/users/login', {
             email: email,
             password: password
-        }).then(async (res) => {
-            if (res.data.auth) {
-                localStorage.setItem('profile', JSON.stringify(res.data.profile));
-                await checkAuth();
-            }
         });
+
+        if (res.data.success) {
+            localStorage.setItem('profile', JSON.stringify(res.data.profile));
+            await checkAuth();
+        }
+
+        return res;
+    }
+
+    function logout() {
+        localStorage.removeItem('profile');
     }
 
     async function register(email, username, password) {
-        await axios.post('/users/register', {
+        return await axios.post('/users/register', {
             username: username,
             password: password,
             email: email
@@ -59,6 +65,7 @@ export function AuthProvider({ children }) {
         currentUser,
         isLoading,
         login,
+        logout,
         register,
     }
 
