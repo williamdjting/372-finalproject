@@ -26,6 +26,7 @@ export default function WatchLists() {
     }, []);
 
     async function getGroups() {
+        setIsLoading(true);
         await axios.get('/groups/all').then((res) => {
             setGroupData(res.data.groups);
             setIsLoading(false);
