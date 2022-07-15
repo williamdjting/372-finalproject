@@ -24,10 +24,12 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email: req.body.email });
     if (user && await bcrypt.compare(req.body.password, user.password)) {
-        const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 90000000 });
-        res.json({ success: true, profile: { user: user, token: token } });
+        user.password = undefined; // Don't sign JWT with the hashed password.
+        const token = jwt.sign({ user }, process.env.JWT_SECRET, { expiresIn: 900000000 });
+        res.cookie('token', token);
+        res.json({ success: true });
     } else {
         res.json({ success: false, error: "Invalid email or password!" });
     }
@@ -41,7 +43,7 @@ router.get('/isLoggedIn', HasToken, async (req, res) => {
 });
 
 function HasToken(req, res, next) {
-    const token = req.header('x-auth-token');
+    const token = req.cookies.token;
     if (!token)
         return res.json({ success: false });
 
