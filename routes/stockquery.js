@@ -17,7 +17,7 @@ const TTL_INTERVAL = 5000;
 
 let companyOverviewCache = [];
 
-router.get('/companyStockOverview' ,async (req, res) => {
+router.post('/companyStockOverview' ,async (req, res) => {
     try {
         const cacheResponseObj = await findCompanyOverviewCache(req.body.companySymbol);
         if (cacheResponseObj) return res.json(cacheResponseObj.companyOverview);
