@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const cookieparser = require('cookie-parser');
 require('dotenv').config();
 
 mongoose.connect(process.env.DB_URL);
@@ -17,6 +18,7 @@ const stockQueryRouter = require('./routes/stockquery');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'client', 'build')));
+app.use(cookieparser());
 
 app.use('/users', usersRouter.routes);
 app.use('/groups', usersRouter.HasToken, groupsRouter);

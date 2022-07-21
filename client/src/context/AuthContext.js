@@ -1,16 +1,6 @@
 import React, { useContext, useState, useEffect } from "react"
 import axios from 'axios'
 
-axios.interceptors.request.use(
-    config => {
-        config.headers['x-auth-token'] = JSON.parse(localStorage.getItem('profile'))?.token;
-        return config
-    },
-    error => {
-        Promise.reject(error)
-    }
-);
-
 const AuthContext = React.createContext();
 
 export function useAuth() {
@@ -41,16 +31,15 @@ export function AuthProvider({ children }) {
             password: password
         });
 
-        if (res.data.success) {
-            localStorage.setItem('profile', JSON.stringify(res.data.profile));
+        if (res.data.success)
             await checkAuth();
-        }
 
         return res;
     }
 
     function logout() {
-        localStorage.removeItem('profile');
+        // Invalidate JWT token.
+        document.cookie = 'token' + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;';
     }
 
     async function register(email, username, password) {
