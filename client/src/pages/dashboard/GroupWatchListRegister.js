@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Loading from '../../components/Loading';
 import axios from 'axios';
 import Avatar from '@mui/material/Avatar';
@@ -15,6 +16,7 @@ export default function GroupWatchListRegister() {
     const [isMakingRequesting, setIsMakingRequesting] = useState(false);
     const groupNameRef = useRef();
     const groupDescriptionRef = useRef();
+    const navigate = new useNavigate();
 
     async function attemptRegister(event) {
         event.preventDefault();
@@ -28,6 +30,8 @@ export default function GroupWatchListRegister() {
 
         if (res.data.error)
             setShowAlert(res.data.error);
+        else
+            navigate('/dashboard');
     }
 
     return (
