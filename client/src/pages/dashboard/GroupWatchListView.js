@@ -17,6 +17,7 @@ import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Loading from "../../components/Loading";
 
 function stockModel(name, price, revenue, revenueGrowth, psRatio, grossProfit, ebitda, peRatio) {
@@ -31,16 +32,14 @@ function memberModel(name) {
     return { name }
 }
 
-const memberData = [
-    memberModel("Matt")
-]
-
 export default function GroupWatchListView() {
+    const { currentUser } = useAuth();
     const [group, setGroup] = useState();
+    const [isAdmin, setIsAdmin] = useState();
+    const [memberData, setMemberData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = new useNavigate();
     const { name } = useParams();
-    const isAdmin = true;
 
     useEffect(() => {
         getGroup();
@@ -51,43 +50,30 @@ export default function GroupWatchListView() {
             params: { name: name }
         }).then((res) => {
             setGroup(res.data.group);
+
+            if (res.data.group) {
+                setIsAdmin(res.data.group.admin === currentUser.username);
+                const members = [];
+                res.data.group.members.forEach((member) => { members.push(memberModel(member)); })
+                setMemberData(members);
+            }
+
             setIsLoading(false);
         }).catch((err) => {
+            console.log(err);
             setIsLoading(false);
             navigate('/dashboard');
         });
     }
 
-    function memberManager() {
-        return <>
-            <Card>
-                <CardContent>
-                    <TableContainer align="right">
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell align="left"><b>{group.name}</b></TableCell>
-                                    <TableCell align="right"><b>Remove Member</b></TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {memberData.map((row) => (
-                                    <TableRow
-                                        key={row.name}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        <TableCell component="th" scope="row">{row.name}</TableCell>
-                                        <TableCell align="right">
-                                            <Button variant="outlined" color="error" onClick={() => { }} startIcon={<Delete />}>Remove</Button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </CardContent>
-            </Card>
-        </>
+    async function kickMember(groupName, member) {
+        const res = await axios.post('/groups/kick', {
+            name: groupName,
+            kickedMember: member
+        });
+
+        if (res.data.success)
+            await getGroup();
     }
 
     function stockManager() {
@@ -138,7 +124,6 @@ export default function GroupWatchListView() {
         return <>
             <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Admin Panel</Typography>
             {stockManager()}
-            {memberManager()}
         </>
     }
 
@@ -180,6 +165,34 @@ export default function GroupWatchListView() {
                     </TableBody>
                 </Table>
             </TableContainer>
+
+            <Card sx={{ mb: 3 }}>
+                <CardContent>
+                    <TableContainer align="right">
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align="left"><b>{group.name}</b></TableCell>
+                                    <TableCell align="right"><b>Kick Member</b></TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {memberData.map((row) => (
+                                    <TableRow
+                                        key={row.name}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell component="th" scope="row">{row.name}</TableCell>
+                                        <TableCell align="right">
+                                            {isAdmin && row.name !== currentUser.username ? <Button variant="outlined" color="error" onClick={() => { kickMember(group.name, row.name) }} startIcon={<Delete />}>KICK</Button> : <></>}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </CardContent>
+            </Card>
 
             {isAdmin ? adminPanel() : <></>}
         </div>

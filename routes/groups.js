@@ -76,6 +76,23 @@ router.post('/delete', async (req, res) => {
     }
 });
 
+router.post('/kick', async (req, res) => {
+    try {
+        const existingGroup = await Group.findOne({ name: req.body.name });
+        if (!existingGroup)
+            return res.json({ success: false });
+
+        if (existingGroup.admin !== req.user.username)
+            return res.json({ success: false });
+
+        existingGroup.members = existingGroup.members.filter((member) => member !== req.body.kickedMember);
+        await existingGroup.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false });
+    }
+})
+
 router.get('/all', async (req, res) => {
     try {
         const groups = await Group.find();
