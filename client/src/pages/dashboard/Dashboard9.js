@@ -1,11 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
+import {Table, TableBody, TableCell, TableContainer, TableHead,
+    TableRow, Paper, Select, MenuItem, InputLabel} from '@mui/material';
 
 import '../../stylesheets/Dashboard9.css'
 import  axios  from 'axios';
@@ -27,7 +22,8 @@ const rows1 = [
 
 ];
 
-const companyInfoArrSortAndFilter = (objArr, isAscend, filterType) => {
+const companyInfoArrSortAndFilter = (objArr, sortType, filterType) => {
+    let isAscend = sortType === 'descending' ? false : true;
     let mappedObj;
     switch (filterType) {
         case MARKET_CAP:
@@ -93,6 +89,18 @@ const companyInfoArrSortAndFilter = (objArr, isAscend, filterType) => {
 function Dashboard9() {
 
     const [companyInfoArr, setCompanyInfoArr] = useState([]);
+    const [sortValue, setSortValue] = useState('descending');
+
+    const handleRowClick = (e) => {
+        console.log('test')
+        const code = e.currentTarget.getAttribute('data-key');
+        const tableId = e.currentTarget.getAttribute('data-tableId');
+        console.log(code, tableId);
+    };
+
+    const handleSortChange = (e) => {
+        setSortValue(e.target.value);
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -111,18 +119,24 @@ function Dashboard9() {
       }, []);
 
       useEffect(() => {
-        console.log(companyInfoArrSortAndFilter(companyInfoArr, false, PROFIT_MARGIN))
+        console.log(companyInfoArrSortAndFilter(companyInfoArr, sortValue, PROFIT_MARGIN))
       }, [companyInfoArr]);
 
     return (
         <div>
             <h1 align="center">Your Insights</h1>
             <h2 align="center">[sorting tab, react hook goes here]</h2>
+            <InputLabel id="sortLabel">Sort</InputLabel>
+            <Select labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
+                <MenuItem value='ascending'>Ascending</MenuItem>
+                <MenuItem value='descending'>Descending</MenuItem>
+            </Select>
+
             <table align="center">
                 <tr className='row9'>
                     <td className='col9'>
                     <div >
-                         <TableContainer  align="right" component={Paper}>
+                         <TableContainer  align="right" component={Paper} table-id={MARKET_CAP}>
                         <Table  sx={{ minWidth: 150, maxWidth: 1200}} aria-label="simple table">
                         <TableHead>
                             <TableRow>
@@ -132,9 +146,12 @@ function Dashboard9() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {companyInfoArrSortAndFilter(companyInfoArr, false, MARKET_CAP).map((row) => (
+                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, MARKET_CAP).map((row) => (
                             <TableRow
+                                data-tableId={MARKET_CAP}
+                                data-key={row.Symbol}
                                 key={row.Symbol}
+                                onClick={handleRowClick}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell align="left" component="th" scope="row">
@@ -159,7 +176,7 @@ function Dashboard9() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                        {companyInfoArrSortAndFilter(companyInfoArr, false, REVENUE).map((row) => (
+                        {companyInfoArrSortAndFilter(companyInfoArr, sortValue, REVENUE).map((row) => (
                             <TableRow
                                 key={row.Symbol}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -188,7 +205,7 @@ function Dashboard9() {
                             </TableRow>
                         </TableHead>
                         <TableBody>    
-                        {companyInfoArrSortAndFilter(companyInfoArr, false, REVENUE_GROWTH).map((row) => (
+                        {companyInfoArrSortAndFilter(companyInfoArr, sortValue, REVENUE_GROWTH).map((row) => (
                             <TableRow
                                 key={row.Symbol}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -216,7 +233,7 @@ function Dashboard9() {
                             </TableRow>
                         </TableHead>
                         <TableBody>   
-                        {companyInfoArrSortAndFilter(companyInfoArr, false, PROFIT_MARGIN).map((row) => (
+                        {companyInfoArrSortAndFilter(companyInfoArr, sortValue, PROFIT_MARGIN).map((row) => (
                             <TableRow
                                 key={row.Symbol}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -243,7 +260,7 @@ function Dashboard9() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                        {companyInfoArrSortAndFilter(companyInfoArr, false, PE_RATIO).map((row) => (
+                        {companyInfoArrSortAndFilter(companyInfoArr, sortValue, PE_RATIO).map((row) => (
                             <TableRow
                                 key={row.Symbol}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -269,7 +286,7 @@ function Dashboard9() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {companyInfoArrSortAndFilter(companyInfoArr, false, PS_RATIO).map((row) => (
+                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, PS_RATIO).map((row) => (
                                 <TableRow
                                     key={row.Symbol}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
