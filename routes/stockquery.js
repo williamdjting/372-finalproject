@@ -98,9 +98,9 @@ router.post('/getRevenuePerShareTTMTimeSeries', async (req, res) => {
     let retObj = [];
     for(let index = 0 ; index < balanceSheetResData.length && index < incomeStatementData.length ; index++) {
         // console.log([])
-        retObj.push({
+        retObj.unshift({
             "Date": balanceSheetResData[index].fiscalDateEnding,
-            "Annual Revenue": (incomeStatementData[index].totalRevenue / balanceSheetResData[index].commonStockSharesOutstanding).toFixed(2)
+            "Annual Revenue Per Share": (incomeStatementData[index].totalRevenue / balanceSheetResData[index].commonStockSharesOutstanding).toFixed(2)
         });
     }
     res.send(retObj);

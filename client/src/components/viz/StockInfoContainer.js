@@ -71,7 +71,7 @@ export default function StockInfoContainer(props) {
       data={props.rangeData}>
       <XAxis dataKey="Date" />
       <YAxis />
-      <Area dataKey="Annual Revenue" stroke="#8884d8" fill="#8884d8" />
+      <Area dataKey="Annual Revenue Per Share" stroke="#8884d8" fill="#8884d8" />
       <Tooltip />
   </AreaChart>
   );
