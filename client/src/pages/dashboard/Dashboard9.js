@@ -13,7 +13,7 @@ const PROFIT_MARGIN = 'ProfitMargin';
 const PE_RATIO = 'PERatio'; //market price per share / reportedEPS
 const PS_RATIO = 'PriceToSalesRatioTTM'; // market cap / total revenue of the last 12 months(1year)
 
-const companyInfoArrSortAndFilter = (objArr, sortType, filterType) => {
+const companyInfoArrSortAndFilter = (objArr, sortType, filterType, topN) => {
     let isAscend = sortType === 'descending' ? false : true;
     let mappedObj;
     switch (filterType) {
@@ -22,54 +22,54 @@ const companyInfoArrSortAndFilter = (objArr, sortType, filterType) => {
                 return (({ Symbol, Name,  MarketCapitalization}) => ({ Symbol, Name,  MarketCapitalization }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.MarketCapitalization) - parseFloat(b.MarketCapitalization) })
+                return mappedObj.sort((a,b) => {return parseFloat(a.MarketCapitalization) - parseFloat(b.MarketCapitalization) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.MarketCapitalization) - parseFloat(a.MarketCapitalization) });
+                return mappedObj.sort((a,b) => {return parseFloat(b.MarketCapitalization) - parseFloat(a.MarketCapitalization) }).slice(0, topN);
             }
         case REVENUE:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name,  RevenuePerShareTTM}) => ({ Symbol, Name,  RevenuePerShareTTM }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.RevenuePerShareTTM) - parseFloat(b.RevenuePerShareTTM) })
+                return mappedObj.sort((a,b) => {return parseFloat(a.RevenuePerShareTTM) - parseFloat(b.RevenuePerShareTTM) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.RevenuePerShareTTM) - parseFloat(a.RevenuePerShareTTM) });
+                return mappedObj.sort((a,b) => {return parseFloat(b.RevenuePerShareTTM) - parseFloat(a.RevenuePerShareTTM) }).slice(0, topN);
             }
         case REVENUE_GROWTH:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name,  QuarterlyRevenueGrowthYOY}) => ({ Symbol, Name,  QuarterlyRevenueGrowthYOY }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.QuarterlyRevenueGrowthYOY) - parseFloat(b.QuarterlyRevenueGrowthYOY) })
+                return mappedObj.sort((a,b) => {return parseFloat(a.QuarterlyRevenueGrowthYOY) - parseFloat(b.QuarterlyRevenueGrowthYOY) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.QuarterlyRevenueGrowthYOY) - parseFloat(a.QuarterlyRevenueGrowthYOY) });
+                return mappedObj.sort((a,b) => {return parseFloat(b.QuarterlyRevenueGrowthYOY) - parseFloat(a.QuarterlyRevenueGrowthYOY) }).slice(0, topN);
             }
         case PROFIT_MARGIN:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name,  ProfitMargin}) => ({ Symbol, Name,  ProfitMargin }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.ProfitMargin) - parseFloat(b.ProfitMargin) })
+                return mappedObj.sort((a,b) => {return parseFloat(a.ProfitMargin) - parseFloat(b.ProfitMargin) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.ProfitMargin) - parseFloat(a.ProfitMargin) });
+                return mappedObj.sort((a,b) => {return parseFloat(b.ProfitMargin) - parseFloat(a.ProfitMargin) }).slice(0, topN);
             }
         case PE_RATIO:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name,  PERatio}) => ({ Symbol, Name,  PERatio }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.PERatio) - parseFloat(b.PERatio) })
+                return mappedObj.sort((a,b) => {return parseFloat(a.PERatio) - parseFloat(b.PERatio) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.PERatio) - parseFloat(a.PERatio) });
+                return mappedObj.sort((a,b) => {return parseFloat(b.PERatio) - parseFloat(a.PERatio) }).slice(0, topN);
             }
         case PS_RATIO:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name,  PriceToSalesRatioTTM}) => ({ Symbol, Name,  PriceToSalesRatioTTM }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.PriceToSalesRatioTTM) - parseFloat(b.PriceToSalesRatioTTM) })
+                return mappedObj.sort((a,b) => {return parseFloat(a.PriceToSalesRatioTTM) - parseFloat(b.PriceToSalesRatioTTM) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.PriceToSalesRatioTTM) - parseFloat(a.PriceToSalesRatioTTM) });
+                return mappedObj.sort((a,b) => {return parseFloat(b.PriceToSalesRatioTTM) - parseFloat(a.PriceToSalesRatioTTM) }).slice(0, topN);
             }
         default:
             return objArr;
@@ -193,7 +193,7 @@ function Dashboard9() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType).map((row) => (
+                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5).map((row) => (
                             <TableRow
                                 data-tableid={displayType}
                                 data-code={row.Symbol}
