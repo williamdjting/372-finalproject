@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -20,13 +20,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Loading from "../../components/Loading";
 
-function stockModel(name, price, revenue, revenueGrowth, psRatio, grossProfit, ebitda, peRatio) {
-    return { name, price, revenue, revenueGrowth, psRatio, grossProfit, ebitda, peRatio }
+function stockModel(name) {
+    return { name }
 }
-
-const stockData = [
-    stockModel('Shopify', 35.57, 4600000000, 57, 28, 0.94, 335000000, 28.23)
-];
 
 function memberModel(name) {
     return { name }
@@ -37,9 +33,11 @@ export default function GroupWatchListView() {
     const [group, setGroup] = useState();
     const [isAdmin, setIsAdmin] = useState();
     const [memberData, setMemberData] = useState([]);
+    const [stockData, setStockData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = new useNavigate();
     const { name } = useParams();
+    const stockTickerRef = useRef();
 
     useEffect(() => {
         getGroup();
@@ -54,8 +52,12 @@ export default function GroupWatchListView() {
             if (res.data.group) {
                 setIsAdmin(res.data.group.admin === currentUser.username);
                 const members = [];
-                res.data.group.members.forEach((member) => { members.push(memberModel(member)); })
+                res.data.group.members.forEach((member) => members.push(memberModel(member)));
                 setMemberData(members);
+
+                const stocks = [];
+                res.data.group.stockList.forEach((stock) => stocks.push(stockModel(stock)));
+                setStockData(stocks);
             }
 
             setIsLoading(false);
@@ -64,6 +66,8 @@ export default function GroupWatchListView() {
             setIsLoading(false);
             navigate('/dashboard');
         });
+
+        stockTickerRef.current.value = "";
     }
 
     async function kickMember(groupName, member) {
@@ -76,23 +80,39 @@ export default function GroupWatchListView() {
             await getGroup();
     }
 
+    async function addStock(groupName, stock) {
+        const res = await axios.post('/groups/addstock', {
+            name: groupName,
+            stock: stock
+        });
+
+        if (res.data.success)
+            await getGroup();
+    }
+
+    async function removeStock(groupName, stock) {
+        const res = await axios.post('/groups/removestock', {
+            name: groupName,
+            stock: stock
+        });
+
+        if (res.data.success)
+            await getGroup();
+    }
+
     function stockManager() {
         return <>
             <Card sx={{ mb: 1 }}>
                 <CardContent>
                     <Box display="flex">
-                        <TextField id="outlined-basic" label="Stock Ticker" variant="outlined" />
-                        <Button variant="contained" sx={{ mx: 1, py: 2 }} onClick={() => { }} startIcon={<Add />}>Add</Button>
+                        <TextField id="outlined-basic" label="Stock Ticker" variant="outlined" inputRef={stockTickerRef} />
+                        <Button variant="contained" sx={{ mx: 1, py: 2 }} onClick={() => { addStock(group.name, stockTickerRef.current.value) }} startIcon={<Add />}>Add</Button>
                     </Box>
                     <TableContainer align="right">
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell align="left"><b>Your Stocks</b></TableCell>
-                                    <TableCell align="right"><b>Share Price</b></TableCell>
-                                    <TableCell align="right"><b>Number of Shares</b></TableCell>
-                                    <TableCell align="right"><b>Total</b></TableCell>
-                                    <TableCell align="right"><b>Remove Stock</b></TableCell>
+                                    <TableCell align="left"><b>Stocks</b></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -104,11 +124,8 @@ export default function GroupWatchListView() {
                                         <TableCell component="th" scope="row">
                                             {row.name}
                                         </TableCell>
-                                        <TableCell align="right">{row.price}</TableCell>
-                                        <TableCell align="right">{row.amount}</TableCell>
-                                        <TableCell align="right">{row.total}</TableCell>
                                         <TableCell align="right">
-                                            <Button variant="outlined" color="error" onClick={() => { }} startIcon={<Delete />}>Remove</Button>
+                                            <Button variant="outlined" color="error" onClick={() => { removeStock(group.name, row.name); }} startIcon={<Delete />}>Remove</Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -134,14 +151,7 @@ export default function GroupWatchListView() {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="left"><b>Your Stocks</b></TableCell>
-                            <TableCell align="right"><b>Share Price (USD)</b></TableCell>
-                            <TableCell align="right"><b>Revenue (TTM)</b></TableCell>
-                            <TableCell align="right"><b>Revenue Growth (TTM)</b></TableCell>
-                            <TableCell align="right"><b>PS Ratio</b></TableCell>
-                            <TableCell align="right"><b>Gross Profit (USD)</b></TableCell>
-                            <TableCell align="right"><b>EBITDA (USD)</b></TableCell>
-                            <TableCell align="right"><b>PE Ratio</b></TableCell>
+                            <TableCell align="left"><b>Stocks</b></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -153,13 +163,6 @@ export default function GroupWatchListView() {
                                 <TableCell align="left" component="th" scope="row">
                                     {row.name}
                                 </TableCell>
-                                <TableCell align="right">${row.price}</TableCell>
-                                <TableCell align="right">${row.revenue}</TableCell>
-                                <TableCell align="right">{row.revenueGrowth}%</TableCell>
-                                <TableCell align="right">{row.psRatio}</TableCell>
-                                <TableCell align="right">${row.grossProfit}</TableCell>
-                                <TableCell align="right">${row.ebitda}</TableCell>
-                                <TableCell align="right">${row.peRatio}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

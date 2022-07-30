@@ -91,7 +91,7 @@ router.post('/kick', async (req, res) => {
     } catch (err) {
         res.json({ success: false });
     }
-})
+});
 
 router.get('/all', async (req, res) => {
     try {
@@ -110,6 +110,35 @@ router.get('/get', async (req, res) => {
             return res.json({ success: false });
 
         res.json({ success: true, group: existingGroup });
+    } catch (err) {
+        res.json({ success: false });
+    }
+});
+
+router.post('/addstock', async (req, res) => {
+    try {
+        const existingGroup = await Group.findOne({ name: req.body.name });
+        if (!existingGroup)
+            return res.json({ success: false });
+
+        if (!existingGroup.stockList.includes(req.body.stock))
+            existingGroup.stockList.push(req.body.stock);
+        await existingGroup.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false });
+    }
+});
+
+router.post('/removestock', async (req, res) => {
+    try {
+        const existingGroup = await Group.findOne({ name: req.body.name });
+        if (!existingGroup)
+            return res.json({ success: false });
+
+        existingGroup.stockList = existingGroup.stockList.filter((member) => member !== req.body.stock);
+        await existingGroup.save();
+        res.json({ success: true });
     } catch (err) {
         res.json({ success: false });
     }
