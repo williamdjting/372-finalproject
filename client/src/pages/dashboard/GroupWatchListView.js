@@ -19,12 +19,7 @@ import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Loading from "../../components/Loading";
-import StockInfoContainer from "../../components/viz/StockInfoContainer";
 import { Select, MenuItem, InputLabel } from '@mui/material';
-
-function stockModel(name) {
-    return { name }
-}
 
 function memberModel(name) {
     return { name }
@@ -37,7 +32,7 @@ const PROFIT_MARGIN = 'ProfitMargin';
 const PE_RATIO = 'PERatio'; //market price per share / reportedEPS
 const PS_RATIO = 'PriceToSalesRatioTTM'; // market cap / total revenue of the last 12 months(1year)
 
-const companyInfoArrSortAndFilter = (objArr, sortType, filterType, topN) => {
+const companyInfoArrSortAndFilter = (objArr, sortType, filterType) => {
     let isAscend = sortType === 'descending' ? false : true;
     let mappedObj;
     switch (filterType) {
@@ -46,54 +41,54 @@ const companyInfoArrSortAndFilter = (objArr, sortType, filterType, topN) => {
                 return (({ Symbol, Name, MarketCapitalization }) => ({ Symbol, Name, MarketCapitalization }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a, b) => { return parseFloat(a.MarketCapitalization) - parseFloat(b.MarketCapitalization) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.MarketCapitalization) - parseFloat(b.MarketCapitalization) });
             } else {
-                return mappedObj.sort((a, b) => { return parseFloat(b.MarketCapitalization) - parseFloat(a.MarketCapitalization) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.MarketCapitalization) - parseFloat(a.MarketCapitalization) });
             }
         case REVENUE:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name, RevenuePerShareTTM }) => ({ Symbol, Name, RevenuePerShareTTM }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a, b) => { return parseFloat(a.RevenuePerShareTTM) - parseFloat(b.RevenuePerShareTTM) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.RevenuePerShareTTM) - parseFloat(b.RevenuePerShareTTM) });
             } else {
-                return mappedObj.sort((a, b) => { return parseFloat(b.RevenuePerShareTTM) - parseFloat(a.RevenuePerShareTTM) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.RevenuePerShareTTM) - parseFloat(a.RevenuePerShareTTM) });
             }
         case REVENUE_GROWTH:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name, QuarterlyRevenueGrowthYOY }) => ({ Symbol, Name, QuarterlyRevenueGrowthYOY }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a, b) => { return parseFloat(a.QuarterlyRevenueGrowthYOY) - parseFloat(b.QuarterlyRevenueGrowthYOY) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.QuarterlyRevenueGrowthYOY) - parseFloat(b.QuarterlyRevenueGrowthYOY) });
             } else {
-                return mappedObj.sort((a, b) => { return parseFloat(b.QuarterlyRevenueGrowthYOY) - parseFloat(a.QuarterlyRevenueGrowthYOY) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.QuarterlyRevenueGrowthYOY) - parseFloat(a.QuarterlyRevenueGrowthYOY) });
             }
         case PROFIT_MARGIN:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name, ProfitMargin }) => ({ Symbol, Name, ProfitMargin }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a, b) => { return parseFloat(a.ProfitMargin) - parseFloat(b.ProfitMargin) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.ProfitMargin) - parseFloat(b.ProfitMargin) });
             } else {
-                return mappedObj.sort((a, b) => { return parseFloat(b.ProfitMargin) - parseFloat(a.ProfitMargin) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.ProfitMargin) - parseFloat(a.ProfitMargin) });
             }
         case PE_RATIO:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name, PERatio }) => ({ Symbol, Name, PERatio }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a, b) => { return parseFloat(a.PERatio) - parseFloat(b.PERatio) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.PERatio) - parseFloat(b.PERatio) });
             } else {
-                return mappedObj.sort((a, b) => { return parseFloat(b.PERatio) - parseFloat(a.PERatio) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.PERatio) - parseFloat(a.PERatio) });
             }
         case PS_RATIO:
             mappedObj = objArr.map(obj => {
                 return (({ Symbol, Name, PriceToSalesRatioTTM }) => ({ Symbol, Name, PriceToSalesRatioTTM }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a, b) => { return parseFloat(a.PriceToSalesRatioTTM) - parseFloat(b.PriceToSalesRatioTTM) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.PriceToSalesRatioTTM) - parseFloat(b.PriceToSalesRatioTTM) });
             } else {
-                return mappedObj.sort((a, b) => { return parseFloat(b.PriceToSalesRatioTTM) - parseFloat(a.PriceToSalesRatioTTM) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.PriceToSalesRatioTTM) - parseFloat(a.PriceToSalesRatioTTM) });
             }
         default:
             return objArr;
@@ -169,14 +164,18 @@ export default function GroupWatchListView() {
                 res.data.group.members.forEach((member) => members.push(memberModel(member)));
                 setMemberData(members);
 
-                const stocks = [];
-                res.data.group.stockList.forEach((stock) => {
-                    // const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
-                    //     companySymbol: stock
-                    // });
-                    stocks.push(stock);
+                const stocks = res.data.group.stockList;
+                const companyData = [];
+                res.data.group.stockList.forEach(async (stock) => {
+                    const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
+                        params: { companySymbol: stock }
+                    });
+                    if (companyInfoRes.data['Symbol'] !== undefined) {
+                        companyData.push(companyInfoRes.data);
+                    }
                 });
                 setStockData(stocks);
+                setCompanyInfoArr(companyData);
             }
 
             setIsLoading(false);
@@ -307,7 +306,7 @@ export default function GroupWatchListView() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5).map((row) => (
+                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType).map((row) => (
                                 <TableRow
                                     data-tableid={displayType}
                                     data-code={row.Symbol}

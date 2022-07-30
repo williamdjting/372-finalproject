@@ -23,7 +23,7 @@ router.get('/companyStockOverview', async (req, res) => {
         if (cacheResponseObj)
             return res.json(cacheResponseObj.companyOverview);
 
-        const response = await axios.get(createQueryUrl(OVERVIEW, req.body.companySymbol));
+        const response = await axios.get(createQueryUrl(OVERVIEW, req.query.companySymbol));
         const overviewObj = await response.data;
         addToCompanyOverviewCache(overviewObj, TTL);
         return res.json(overviewObj);
