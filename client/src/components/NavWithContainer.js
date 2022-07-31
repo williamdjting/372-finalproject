@@ -18,8 +18,7 @@ function NavBar(props) {
 
     function navItems() {
         return <>
-            <Button color="inherit">Insights</Button>
-            <Button color="inherit">WatchLists</Button>
+            <Button color="inherit" onClick={() => { navigate("/dashboard/insights"); }}>Insights</Button>
             <Button color="inherit" onClick={() => { logout(); navigate("/"); }}>Logout</Button>
         </>
     }

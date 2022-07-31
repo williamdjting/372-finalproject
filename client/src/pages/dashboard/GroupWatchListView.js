@@ -156,7 +156,7 @@ export default function GroupWatchListView() {
         setIsLoading(true);
         await axios.get('/groups/get', {
             params: { name: name }
-        }).then((res) => {
+        }).then(async (res) => {
             setGroup(res.data.group);
 
             if (res.data.group) {
@@ -166,15 +166,7 @@ export default function GroupWatchListView() {
                 setMemberData(members);
 
                 const stocks = res.data.group.stockList;
-                const companyData = [];
-                res.data.group.stockList.forEach(async (stock) => {
-                    const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
-                        params: { companySymbol: stock }
-                    });
-                    if (companyInfoRes.data['Symbol'] !== undefined) {
-                        companyData.push(companyInfoRes.data);
-                    }
-                });
+                const companyData = await getStockData(stocks);
                 setStockData(stocks);
                 setCompanyInfoArr(companyData);
             }
@@ -187,6 +179,18 @@ export default function GroupWatchListView() {
 
         if (stockTickerRef && stockTickerRef.current)
             stockTickerRef.current.value = "";
+    }
+
+    async function getStockData(stockList) {
+        const companyData = [];
+        await Promise.all(stockList.map(async (stock) => {
+            const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
+                params: { companySymbol: stock }
+            });
+            if (companyInfoRes.data['Symbol'] !== undefined)
+                companyData.push(companyInfoRes.data);
+        }));
+        return companyData;
     }
 
     async function kickMember(groupName, member) {
