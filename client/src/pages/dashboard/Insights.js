@@ -117,8 +117,7 @@ const valueFormatHelper = (displayType, rowValue) => {
     }
 };
 
-function Dashboard9() {
-
+function Insights() {
     const [companyInfoArr, setCompanyInfoArr] = useState([]);
     const [sortValue, setSortValue] = useState('descending');
     const [revenuePerShareTS, setRevenuePerShareTS] = useState([]);
@@ -214,4 +213,4 @@ function Dashboard9() {
     )
 }
 
-export default Dashboard9;
+export default Insights;
