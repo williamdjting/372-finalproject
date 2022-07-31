@@ -150,7 +150,7 @@ router.post('/getPriceToSalesRatioTTMTimeSeries', async (req, res) => {// market
         incomeStatementHashMap[obj.fiscalDateEnding.slice(0,8)] = obj.totalRevenue;
     });
     Object.keys(stockPriceTimeSeriesData).forEach(key => {
-        if( incomeStatementHashMap[key.slice(0,8)] !== undefined) {
+        if( incomeStatementHashMap[key.slice(0,8)] !== undefined && balanceSheetHashMap[key.slice(0,8)]) {
             console.log(parseFloat(balanceSheetHashMap[key.slice(0,8)]));
             console.log(key.slice(0,8))
             retObj.unshift({

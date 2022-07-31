@@ -162,7 +162,7 @@ function Dashboard9() {
             let marketCapData = await marketCapRes.data;
             marketCapData = marketCapData.map(obj => {
                 let newObj = {};
-                newObj.Date = obj.date;
+                newObj.Date = obj.Date;
                 newObj.market_capitialization = parseFloat(obj.MarketCapitalization)
                 return newObj;
             });
@@ -190,7 +190,7 @@ function Dashboard9() {
                     let marketCapData = await marketCapRes.data;
                     marketCapData = marketCapData.map(obj => {
                         let newObj = {};
-                        newObj.Date = obj.date;
+                        newObj.Date = obj.Date;
                         newObj.market_capitialization = parseFloat(obj.MarketCapitalization)
                         return newObj;
                     });
