@@ -143,6 +143,7 @@ export default function GroupWatchListView() {
     const { name } = useParams();
     const stockTickerRef = useRef();
 
+    const [generatedTable, setGeneratedTable] = useState([]);
     const [companyInfoArr, setCompanyInfoArr] = useState([]);
     const [sortValue, setSortValue] = useState('descending');
     const [displayType, setDisplayType] = useState(MARKET_CAP);
@@ -152,6 +153,7 @@ export default function GroupWatchListView() {
     }, []);
 
     async function getGroup() {
+        setIsLoading(true);
         await axios.get('/groups/get', {
             params: { name: name }
         }).then((res) => {
@@ -179,7 +181,6 @@ export default function GroupWatchListView() {
 
             setIsLoading(false);
         }).catch((err) => {
-            console.log(err);
             setIsLoading(false);
             navigate('/dashboard');
         });
@@ -217,12 +218,6 @@ export default function GroupWatchListView() {
         if (res.data.success)
             await getGroup();
     }
-
-    const handleRowClick = (e) => {
-        const code = e.currentTarget.getAttribute('data-code');
-        const tableid = e.currentTarget.getAttribute('data-tableid');
-        console.log(code, tableid);
-    };
 
     const handleSortChange = (e) => {
         setSortValue(e.target.value);
@@ -313,7 +308,6 @@ export default function GroupWatchListView() {
                                         data-tableid={displayType}
                                         data-code={row.Symbol}
                                         key={row.Symbol}
-                                        onClick={handleRowClick}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
                                         <TableCell align="left" component="th" scope="row">
