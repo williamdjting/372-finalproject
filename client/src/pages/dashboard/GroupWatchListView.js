@@ -5,7 +5,6 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -282,47 +281,51 @@ export default function GroupWatchListView() {
             <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>{name}</Typography>
 
             <Card sx={{ mb: 3 }}>
-                <InputLabel id="sortLabel">Sort</InputLabel>
-                <Select labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
-                    <MenuItem value='ascending'>Ascending</MenuItem>
-                    <MenuItem value='descending'>Descending</MenuItem>
-                </Select>
-                <InputLabel id="displayLabel">Display Type</InputLabel>
-                <Select labelId="displayLabel" id="displayType" value={displayType} label="displayType" onChange={handleDisplayTypeChange}>
-                    <MenuItem value={MARKET_CAP}>Market Cap</MenuItem>
-                    <MenuItem value={REVENUE}>Revenue Per Share(TTM)</MenuItem>
-                    <MenuItem value={REVENUE_GROWTH}>Quarterly Revenue Growth(YoY)</MenuItem>
-                    <MenuItem value={PROFIT_MARGIN}>Profit Margin</MenuItem>
-                    <MenuItem value={PE_RATIO}>P/E Ratio</MenuItem>
-                    <MenuItem value={PS_RATIO}>P/S Ratio</MenuItem>
-                </Select>
-                <TableContainer align="right" component={Paper} table-id={MARKET_CAP}>
-                    <Table sx={{ minWidth: 150, maxWidth: 1200 }} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell align="left"><b>{tableTitleMapHelper(displayType)}</b></TableCell>
-                                <TableCell align="right"><b></b></TableCell>
-                                <TableCell align="right"><b></b></TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType).map((row) => (
-                                <TableRow
-                                    data-tableid={displayType}
-                                    data-code={row.Symbol}
-                                    key={row.Symbol}
-                                    onClick={handleRowClick}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
-                                    <TableCell align="left" component="th" scope="row">
-                                        {row.Name}
-                                    </TableCell>
-                                    <TableCell align="right">{valueFormatHelper(displayType, row[displayType])}</TableCell>
+                <CardContent>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                        <InputLabel id="sortLabel">Sort</InputLabel>
+                        <Select sx={{ mx: 1 }} labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
+                            <MenuItem value='ascending'>Ascending</MenuItem>
+                            <MenuItem value='descending'>Descending</MenuItem>
+                        </Select>
+                        <InputLabel id="displayLabel">Display Type</InputLabel>
+                        <Select sx={{ mx: 1 }} labelId="displayLabel" id="displayType" value={displayType} label="displayType" onChange={handleDisplayTypeChange}>
+                            <MenuItem value={MARKET_CAP}>Market Cap</MenuItem>
+                            <MenuItem value={REVENUE}>Revenue Per Share(TTM)</MenuItem>
+                            <MenuItem value={REVENUE_GROWTH}>Quarterly Revenue Growth(YoY)</MenuItem>
+                            <MenuItem value={PROFIT_MARGIN}>Profit Margin</MenuItem>
+                            <MenuItem value={PE_RATIO}>P/E Ratio</MenuItem>
+                            <MenuItem value={PS_RATIO}>P/S Ratio</MenuItem>
+                        </Select>
+                    </div>
+                    <TableContainer align="right" table-id={MARKET_CAP}>
+                        <Table sx={{ minWidth: 150, maxWidth: 1200 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align="left"><b>{tableTitleMapHelper(displayType)}</b></TableCell>
+                                    <TableCell align="right"><b></b></TableCell>
+                                    <TableCell align="right"><b></b></TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType).map((row) => (
+                                    <TableRow
+                                        data-tableid={displayType}
+                                        data-code={row.Symbol}
+                                        key={row.Symbol}
+                                        onClick={handleRowClick}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell align="left" component="th" scope="row">
+                                            {row.Name}
+                                        </TableCell>
+                                        <TableCell align="right">{valueFormatHelper(displayType, row[displayType])}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </CardContent>
             </Card>
 
             <Card sx={{ mb: 3 }}>
@@ -332,7 +335,7 @@ export default function GroupWatchListView() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell align="left"><b>{group.name}</b></TableCell>
-                                    <TableCell align="right"><b>Kick Member</b></TableCell>
+                                    {isAdmin && <TableCell align="right"><b>Kick Member</b></TableCell>}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
