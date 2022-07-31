@@ -19,11 +19,13 @@ const TTL_INTERVAL = 5000;
 
 let companyOverviewCache = [];
 
-router.post('/companyStockOverview' ,async (req, res) => {
+router.get('/companyStockOverview', async (req, res) => {
     try {
         const cacheResponseObj = await findCompanyOverviewCache(req.body.companySymbol);
-        if (cacheResponseObj) return res.json(cacheResponseObj.companyOverview);
-        const response = await axios.get(createQueryUrl(OVERVIEW, req.body.companySymbol));
+        if (cacheResponseObj)
+            return res.json(cacheResponseObj.companyOverview);
+
+        const response = await axios.get(createQueryUrl(OVERVIEW, req.query.companySymbol));
         const overviewObj = await response.data;
         addToCompanyOverviewCache(overviewObj, TTL);
         return res.json(overviewObj);
@@ -43,7 +45,7 @@ router.get('/allStocksCodeAndName', async (req, res) => {
         jsonData = jsonData.map(row => {
             let updatedRow = row;
             delete updatedRow.ipoDate;
-            delete updatedRow. delistingDate;
+            delete updatedRow.delistingDate;
             delete updatedRow.status;
             return updatedRow;
         }).filter(row => row.assetType === 'Stock' && row.name !== '');
@@ -59,10 +61,14 @@ router.get('/allStocksCodeAndName', async (req, res) => {
 router.post('/addUserStockTickerToDb', async (req, res) => {
     let userObj = await getUserStockListFromDbHelper(req.user.username);
     if (!userObj.stockList || !userObj.stockList.find(obj => obj.code === req.body.stockCode)) {
-        await User.updateOne({ _id: userObj._id }, { $push : { stockList : { 
-            code: req.body.stockCode,
-            numberOfShares: req.body.numberOfShares
-        }}}).catch( err => console.warn(err));
+        await User.updateOne({ _id: userObj._id }, {
+            $push: {
+                stockList: {
+                    code: req.body.stockCode,
+                    numberOfShares: req.body.numberOfShares
+                }
+            }
+        }).catch(err => console.warn(err));
         res.send({ post: 'ticker added success' });
     } else {
         res.send({ post: 'success, stock ticker is already in the db' });
@@ -71,11 +77,11 @@ router.post('/addUserStockTickerToDb', async (req, res) => {
 
 router.delete('/removeUserStockTickerFromDb', async (req, res) => {
     let userObj = await getUserStockListFromDbHelper(req.user.username);
-    if(userObj.stockList.find(obj => obj.code === req.body.stockCode)) {
-        await User.updateOne({_id : userObj._id}, { $pull: { "stockList" : { "code" : req.body.stockCode }}});
-        res.send({ post : "stock removed successfully" });
+    if (userObj.stockList.find(obj => obj.code === req.body.stockCode)) {
+        await User.updateOne({ _id: userObj._id }, { $pull: { "stockList": { "code": req.body.stockCode } } });
+        res.send({ post: "stock removed successfully" });
     } else {
-        res.send({ post : "user does not have this stock in the db" });
+        res.send({ post: "user does not have this stock in the db" });
     }
 });
 
@@ -133,8 +139,8 @@ const findCompanyOverviewCache = async (companySymbol) => {
     const release = await mutex.acquire();
     let retObj;
     try {
-        companyOverviewCache.forEach( obj => {
-            if (obj.companyOverview.Symbol === companySymbol.toUpperCase()) {
+        companyOverviewCache.forEach(obj => {
+            if (obj.companyOverview.Symbol === companySymbol?.toUpperCase()) {
                 retObj = obj;
             };
         });
@@ -147,7 +153,7 @@ const findCompanyOverviewCache = async (companySymbol) => {
 const addToCompanyOverviewCache = async (companyOverview, ttl) => {
     const release = await mutex.acquire();
     try {
-        companyOverviewCache.push({companyOverview, ttl})
+        companyOverviewCache.push({ companyOverview, ttl })
     } finally {
         release();
     }

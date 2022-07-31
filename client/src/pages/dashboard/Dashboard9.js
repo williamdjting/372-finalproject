@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableHead,
-    TableRow, Paper, Select, MenuItem, InputLabel} from '@mui/material';
+
+import {
+    Table, TableBody, TableCell, TableContainer, TableHead,
+    TableRow, Paper, Select, MenuItem, InputLabel
+} from '@mui/material';
 import StockInfoContainer from '../../components/viz/StockInfoContainer';
 
 import '../../stylesheets/Dashboard9.css'
-import  axios  from 'axios';
+import axios from 'axios';
 
 const MARKET_CAP = 'MarketCapitalization'; // commonStockSharesOutstanding * stock price at given date (balance sheet, income statement)
 const REVENUE = 'RevenuePerShareTTM'; // totalRevenue / commonStockSharesOutstanding
-const REVENUE_GROWTH = 'QuarterlyRevenueGrowthYOY'; 
+const REVENUE_GROWTH = 'QuarterlyRevenueGrowthYOY';
 const PROFIT_MARGIN = 'ProfitMargin';
 const PE_RATIO = 'PERatio'; //market price per share / reportedEPS
 const PS_RATIO = 'PriceToSalesRatioTTM'; // market cap / total revenue of the last 12 months(1year)
@@ -19,62 +22,61 @@ const companyInfoArrSortAndFilter = (objArr, sortType, filterType, topN) => {
     switch (filterType) {
         case MARKET_CAP:
             mappedObj = objArr.map(obj => {
-                return (({ Symbol, Name,  MarketCapitalization}) => ({ Symbol, Name,  MarketCapitalization }))(obj);
+                return (({ Symbol, Name, MarketCapitalization }) => ({ Symbol, Name, MarketCapitalization }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.MarketCapitalization) - parseFloat(b.MarketCapitalization) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.MarketCapitalization) - parseFloat(b.MarketCapitalization) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.MarketCapitalization) - parseFloat(a.MarketCapitalization) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.MarketCapitalization) - parseFloat(a.MarketCapitalization) }).slice(0, topN);
             }
         case REVENUE:
             mappedObj = objArr.map(obj => {
-                return (({ Symbol, Name,  RevenuePerShareTTM}) => ({ Symbol, Name,  RevenuePerShareTTM }))(obj);
+                return (({ Symbol, Name, RevenuePerShareTTM }) => ({ Symbol, Name, RevenuePerShareTTM }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.RevenuePerShareTTM) - parseFloat(b.RevenuePerShareTTM) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.RevenuePerShareTTM) - parseFloat(b.RevenuePerShareTTM) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.RevenuePerShareTTM) - parseFloat(a.RevenuePerShareTTM) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.RevenuePerShareTTM) - parseFloat(a.RevenuePerShareTTM) }).slice(0, topN);
             }
         case REVENUE_GROWTH:
             mappedObj = objArr.map(obj => {
-                return (({ Symbol, Name,  QuarterlyRevenueGrowthYOY}) => ({ Symbol, Name,  QuarterlyRevenueGrowthYOY }))(obj);
+                return (({ Symbol, Name, QuarterlyRevenueGrowthYOY }) => ({ Symbol, Name, QuarterlyRevenueGrowthYOY }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.QuarterlyRevenueGrowthYOY) - parseFloat(b.QuarterlyRevenueGrowthYOY) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.QuarterlyRevenueGrowthYOY) - parseFloat(b.QuarterlyRevenueGrowthYOY) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.QuarterlyRevenueGrowthYOY) - parseFloat(a.QuarterlyRevenueGrowthYOY) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.QuarterlyRevenueGrowthYOY) - parseFloat(a.QuarterlyRevenueGrowthYOY) }).slice(0, topN);
             }
         case PROFIT_MARGIN:
             mappedObj = objArr.map(obj => {
-                return (({ Symbol, Name,  ProfitMargin}) => ({ Symbol, Name,  ProfitMargin }))(obj);
+                return (({ Symbol, Name, ProfitMargin }) => ({ Symbol, Name, ProfitMargin }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.ProfitMargin) - parseFloat(b.ProfitMargin) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.ProfitMargin) - parseFloat(b.ProfitMargin) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.ProfitMargin) - parseFloat(a.ProfitMargin) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.ProfitMargin) - parseFloat(a.ProfitMargin) }).slice(0, topN);
             }
         case PE_RATIO:
             mappedObj = objArr.map(obj => {
-                return (({ Symbol, Name,  PERatio}) => ({ Symbol, Name,  PERatio }))(obj);
+                return (({ Symbol, Name, PERatio }) => ({ Symbol, Name, PERatio }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.PERatio) - parseFloat(b.PERatio) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.PERatio) - parseFloat(b.PERatio) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.PERatio) - parseFloat(a.PERatio) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.PERatio) - parseFloat(a.PERatio) }).slice(0, topN);
             }
         case PS_RATIO:
             mappedObj = objArr.map(obj => {
-                return (({ Symbol, Name,  PriceToSalesRatioTTM}) => ({ Symbol, Name,  PriceToSalesRatioTTM }))(obj);
+                return (({ Symbol, Name, PriceToSalesRatioTTM }) => ({ Symbol, Name, PriceToSalesRatioTTM }))(obj);
             })
             if (isAscend) {
-                return mappedObj.sort((a,b) => {return parseFloat(a.PriceToSalesRatioTTM) - parseFloat(b.PriceToSalesRatioTTM) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(a.PriceToSalesRatioTTM) - parseFloat(b.PriceToSalesRatioTTM) }).slice(0, topN);
             } else {
-                return mappedObj.sort((a,b) => {return parseFloat(b.PriceToSalesRatioTTM) - parseFloat(a.PriceToSalesRatioTTM) }).slice(0, topN);
+                return mappedObj.sort((a, b) => { return parseFloat(b.PriceToSalesRatioTTM) - parseFloat(a.PriceToSalesRatioTTM) }).slice(0, topN);
             }
         default:
             return objArr;
     };
-
 };
 
 const tableTitleMapHelper = (displayType) => {
@@ -148,24 +150,25 @@ function Dashboard9() {
             const objectArr = await response.data;
             let companyInfoArr = [];
             for await (let arrObj of objectArr) {
-                const companyInfoRes = await axios.post('/stockquery/companyStockOverview', {
-                    companySymbol: arrObj.code  
+                console.log(arrObj);
+                const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
+                    params: { companySymbol: arrObj.code }
                 })
                 companyInfoArr.push(await companyInfoRes.data);
             }
             setCompanyInfoArr(companyInfoArr);
         };
         fetchData();
-      }, []);
+    }, []);
 
-      useEffect(() => {
-      }, [companyInfoArr]);
+    useEffect(() => {
+    }, [companyInfoArr]);
 
     return (
         <div>
             <h1 align="center">Your Insights</h1>
             <h2 align="center">[sorting tab, react hook goes here]</h2>
-            <StockInfoContainer rangeData={revenuePerShareTS}/>
+            <StockInfoContainer rangeData={revenuePerShareTS} />
             <InputLabel id="sortLabel">Sort</InputLabel>
             <Select labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
                 <MenuItem value='ascending'>Ascending</MenuItem>
@@ -180,20 +183,17 @@ function Dashboard9() {
                 <MenuItem value={PE_RATIO}>P/E Ratio</MenuItem>
                 <MenuItem value={PS_RATIO}>P/S Ratio</MenuItem>
             </Select>
-            
-               
-                    
-                        <TableContainer  align="right" component={Paper} table-id={MARKET_CAP}>
-                        <Table  sx={{ minWidth: 150, maxWidth: 1200}} aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
+            <TableContainer align="right" component={Paper} table-id={MARKET_CAP}>
+                <Table sx={{ minWidth: 150, maxWidth: 1200 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
                             <TableCell align="left"><b>{tableTitleMapHelper(displayType)}</b></TableCell>
                             <TableCell align="right"><b></b></TableCell>
                             <TableCell align="right"><b></b></TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5).map((row) => (
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5).map((row) => (
                             <TableRow
                                 data-tableid={displayType}
                                 data-code={row.Symbol}
@@ -202,49 +202,16 @@ function Dashboard9() {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell align="left" component="th" scope="row">
-                                {row.Name}
+                                    {row.Name}
                                 </TableCell>
                                 <TableCell align="right">{valueFormatHelper(displayType, row[displayType])}</TableCell>
                             </TableRow>
-                            ))}
-                        </TableBody>
-                        </Table>
-                    </TableContainer>
-                     
-           
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </div>
     )
 }
 
 export default Dashboard9;
-
-/*
-"fiscalDateEnding": "2021-12-31",
-            "reportedCurrency": "USD",
-            "grossProfit": "31486000000",
-            "totalRevenue": "57350000000",
-            "costOfRevenue": "25865000000",
-            "costofGoodsAndServicesSold": "300000000",
-            "operatingIncome": "4786000000",
-            "sellingGeneralAndAdministrative": "18745000000",
-            "researchAndDevelopment": "6488000000",
-            "operatingExpenses": "26700000000",
-            "investmentIncomeNet": "None",
-            "netInterestIncome": "-1155000000",
-            "interestIncome": "52000000",
-            "interestExpense": "26700000000",
-            "nonInterestIncome": "None",
-            "otherNonOperatingIncome": "-873000000",
-            "depreciation": "3888000000",
-            "depreciationAndAmortization": "2529000000",
-            "incomeBeforeTax": "5867000000",
-            "incomeTaxExpense": "124000000",
-            "interestAndDebtExpense": "1155000000",
-            "netIncomeFromContinuingOperations": "4712000000",
-            "comprehensiveIncomeNetOfTax": "11299000000",
-            "ebit": "7022000000",
-            "ebitda": "9551000000",
-            "netIncome": "5743000000"
-
-            */
-            // (57350000000 - 26700000000 - 26700000000 - 124000000 - 1155000000) / 57350000000
