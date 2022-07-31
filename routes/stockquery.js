@@ -75,7 +75,7 @@ router.post('/addUserStockTickerToDb', async (req, res) => {
     }
 });
 
-router.delete('/removeUserStockTickerFromDb', async (req, res) => {
+router.post('/removeUserStockTickerFromDb', async (req, res) => {
     let userObj = await getUserStockListFromDbHelper(req.user.username);
     if (userObj.stockList.find(obj => obj.code === req.body.stockCode)) {
         await User.updateOne({ _id: userObj._id }, { $pull: { "stockList": { "code": req.body.stockCode } } });
@@ -102,7 +102,7 @@ router.post('/getRevenuePerShareTTMTimeSeries', async (req, res) => {
     let balanceSheetResData = balanceSheetRes.data['annualReports']
     let incomeStatementData = incomeStatementRes.data['annualReports']
     let retObj = [];
-    for(let index = 0 ; index < balanceSheetResData.length && index < incomeStatementData.length ; index++) {
+    for (let index = 0; index < balanceSheetResData.length && index < incomeStatementData.length; index++) {
         // console.log([])
         retObj.unshift({
             "Date": balanceSheetResData[index].fiscalDateEnding,

@@ -132,15 +132,11 @@ const valueFormatHelper = (displayType, rowValue) => {
     }
 };
 
-export default function GroupWatchListView() {
+export default function PersonalWatchListView() {
     const { currentUser } = useAuth();
-    const [group, setGroup] = useState();
-    const [isAdmin, setIsAdmin] = useState();
-    const [memberData, setMemberData] = useState([]);
     const [stockData, setStockData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = new useNavigate();
-    const { name } = useParams();
     const stockTickerRef = useRef();
 
     const [companyInfoArr, setCompanyInfoArr] = useState([]);
@@ -148,28 +144,16 @@ export default function GroupWatchListView() {
     const [displayType, setDisplayType] = useState(MARKET_CAP);
 
     useEffect(() => {
-        getGroup();
+        getUserData();
     }, []);
 
-    async function getGroup() {
+    async function getUserData() {
         setIsLoading(true);
-        await axios.get('/groups/get', {
-            params: { name: name }
-        }).then(async (res) => {
-            setGroup(res.data.group);
-
-            if (res.data.group) {
-                setIsAdmin(res.data.group.admin === currentUser.username);
-                const members = [];
-                res.data.group.members.forEach((member) => members.push(memberModel(member)));
-                setMemberData(members);
-
-                const stocks = res.data.group.stockList;
-                const companyData = await getStockData(stocks);
-                setStockData(stocks);
-                setCompanyInfoArr(companyData);
-            }
-
+        await axios.get('/stockquery/getUserStockListFromDb').then(async (res) => {
+            const stocks = res.data;
+            const companyData = await getStockData(stocks);
+            setStockData(stocks);
+            setCompanyInfoArr(companyData);
             setIsLoading(false);
         }).catch((err) => {
             setIsLoading(false);
@@ -184,7 +168,7 @@ export default function GroupWatchListView() {
         const companyData = [];
         await Promise.all(stockList.map(async (stock) => {
             const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
-                params: { companySymbol: stock }
+                params: { companySymbol: stock.code }
             });
             if (companyInfoRes.data['Symbol'] !== undefined)
                 companyData.push(companyInfoRes.data);
@@ -192,34 +176,22 @@ export default function GroupWatchListView() {
         return companyData;
     }
 
-    async function kickMember(groupName, member) {
-        const res = await axios.post('/groups/kick', {
-            name: groupName,
-            kickedMember: member
+    async function addStock(stock) {
+        const res = await axios.post('/stockquery/addUserStockTickerToDb', {
+            stockCode: stock
         });
 
-        if (res.data.success)
-            await getGroup();
+        if (res.data.post)
+            await getUserData();
     }
 
-    async function addStock(groupName, stock) {
-        const res = await axios.post('/groups/addstock', {
-            name: groupName,
-            stock: stock
+    async function removeStock(stock) {
+        const res = await axios.post('/stockquery/removeUserStockTickerFromDb', {
+            stockCode: stock
         });
 
-        if (res.data.success)
-            await getGroup();
-    }
-
-    async function removeStock(groupName, stock) {
-        const res = await axios.post('/groups/removestock', {
-            name: groupName,
-            stock: stock
-        });
-
-        if (res.data.success)
-            await getGroup();
+        if (res.data.post)
+            await getUserData();
     }
 
     const handleSortChange = (e) => {
@@ -236,7 +208,7 @@ export default function GroupWatchListView() {
                 <CardContent>
                     <Box display="flex">
                         <TextField id="outlined-basic" label="Stock Ticker" variant="outlined" inputRef={stockTickerRef} />
-                        <Button variant="contained" sx={{ mx: 1, py: 2 }} onClick={() => { addStock(group.name, stockTickerRef.current.value) }} startIcon={<Add />}>Add</Button>
+                        <Button variant="contained" sx={{ mx: 1, py: 2 }} onClick={() => { addStock(stockTickerRef.current.value) }} startIcon={<Add />}>Add</Button>
                     </Box>
                     <TableContainer align="right">
                         <Table>
@@ -252,10 +224,10 @@ export default function GroupWatchListView() {
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
                                         <TableCell component="th" scope="row">
-                                            {row}
+                                            {row.code}
                                         </TableCell>
                                         <TableCell align="right">
-                                            <Button variant="outlined" color="error" onClick={() => { removeStock(group.name, row); }} startIcon={<Delete />}>Remove</Button>
+                                            <Button variant="outlined" color="error" onClick={() => { removeStock(row.code) }} startIcon={<Delete />}>Remove</Button>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -269,14 +241,14 @@ export default function GroupWatchListView() {
 
     function adminPanel() {
         return <>
-            <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Admin Panel</Typography>
+            <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Manage Stocks</Typography>
             {stockManager()}
         </>
     }
 
     return (
         isLoading ? <Loading /> : <div>
-            <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>{name}</Typography>
+            <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Personal</Typography>
 
             <Card sx={{ mb: 3 }}>
                 <CardContent>
@@ -325,35 +297,7 @@ export default function GroupWatchListView() {
                 </CardContent>
             </Card>
 
-            <Card sx={{ mb: 3 }}>
-                <CardContent>
-                    <TableContainer align="right">
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell align="left"><b>{group.name}</b></TableCell>
-                                    {isAdmin && <TableCell align="right"><b>Kick Member</b></TableCell>}
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {memberData.map((row) => (
-                                    <TableRow
-                                        key={row.name}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        <TableCell component="th" scope="row">{row.name}</TableCell>
-                                        <TableCell align="right">
-                                            {isAdmin && row.name !== currentUser.username ? <Button variant="outlined" color="error" onClick={() => { kickMember(group.name, row.name) }} startIcon={<Delete />}>KICK</Button> : <></>}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </CardContent>
-            </Card>
-
-            {isAdmin ? adminPanel() : <></>}
+            {adminPanel()}
         </div>
     )
 }
