@@ -12,12 +12,14 @@ const API_KEY = process.env.ALPHAVANTAGE_API_KEY
 const OVERVIEW = 'OVERVIEW';
 const LISTING_STATUS = 'LISTING_STATUS';
 const TIME_SERIES_DAILY = 'TIME_SERIES_DAILY';
+const BALANCE_SHEET = 'BALANCE_SHEET';
+const INCOME_STATEMENT = 'INCOME_STATEMENT';
 const TTL = 5000000;
 const TTL_INTERVAL = 5000;
 
 let companyOverviewCache = [];
 
-router.get('/companyStockOverview' ,async (req, res) => {
+router.post('/companyStockOverview' ,async (req, res) => {
     try {
         const cacheResponseObj = await findCompanyOverviewCache(req.body.companySymbol);
         if (cacheResponseObj) return res.json(cacheResponseObj.companyOverview);
@@ -88,6 +90,22 @@ router.get('/getCompanyStockPriceTimeSeries', async (req, res) => {
     res.send(response.data["Time Series (Daily)"]);
 });
 
+router.post('/getRevenuePerShareTTMTimeSeries', async (req, res) => {
+    let balanceSheetRes = await axios.get(createQueryUrl(BALANCE_SHEET, req.body.companySymbol));
+    let incomeStatementRes = await axios.get(createQueryUrl(INCOME_STATEMENT, req.body.companySymbol));
+    let balanceSheetResData = balanceSheetRes.data['annualReports']
+    let incomeStatementData = incomeStatementRes.data['annualReports']
+    let retObj = [];
+    for(let index = 0 ; index < balanceSheetResData.length && index < incomeStatementData.length ; index++) {
+        // console.log([])
+        retObj.unshift({
+            "Date": balanceSheetResData[index].fiscalDateEnding,
+            "Annual Revenue Per Share": (incomeStatementData[index].totalRevenue / balanceSheetResData[index].commonStockSharesOutstanding).toFixed(2)
+        });
+    }
+    res.send(retObj);
+});
+
 const getUserStockListFromDbHelper = async (usrName) => {
     return await User.findOne({ username: usrName }, '_id stockList');
 };
@@ -102,8 +120,12 @@ const createQueryUrl = (func, symbol, interval, timePeriod, seriesType) => {
         case LISTING_STATUS:
             url = `${ALPHA_VANTAGE_QUERY_URL}${func}&apikey=${API_KEY}`;
         case TIME_SERIES_DAILY:
-            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&outputsize=compact&apikey=${API_KEY}`
-    }
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&outputsize=compact&apikey=${API_KEY}`;
+        case BALANCE_SHEET:
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&apikey=${API_KEY}`;
+        case INCOME_STATEMENT:
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&apikey=${API_KEY}`;
+    }///https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=IBM&apikey=demo
     return url
 };
 

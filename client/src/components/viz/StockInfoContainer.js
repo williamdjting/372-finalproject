@@ -5,6 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
 // 2) create a dynamically generated list of user stock options with PERatio, Marketcap
 // 3) dynamically switch between charts when a listitem has been pressed
 export default function StockInfoContainer(props) {
+  console.log('test: ', props.rangeData);
 
   //hard coded date
   const rangeData = [
@@ -67,10 +68,10 @@ export default function StockInfoContainer(props) {
     <AreaChart
       width={730}
       height={250}
-      data={rangeData}>
-      <XAxis dataKey="day" />
+      data={props.rangeData}>
+      <XAxis dataKey="Date" />
       <YAxis />
-      <Area dataKey="stockPrice" stroke="#8884d8" fill="#8884d8" />
+      <Area dataKey="Annual Revenue Per Share" stroke="#8884d8" fill="#8884d8" />
       <Tooltip />
   </AreaChart>
   );
