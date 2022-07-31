@@ -120,7 +120,6 @@ const valueFormatHelper = (displayType, rowValue) => {
 function Insights() {
     const [companyInfoArr, setCompanyInfoArr] = useState([]);
     const [sortValue, setSortValue] = useState('descending');
-    const [revenuePerShareTS, setRevenuePerShareTS] = useState([]);
     const [displayType, setDisplayType] = useState(MARKET_CAP);
     const [chartData, setChartData] = useState({});
 
@@ -128,6 +127,7 @@ function Insights() {
         const code = e.currentTarget.getAttribute('data-code');
         const tableid = e.currentTarget.getAttribute('data-tableid');
         console.log(code, tableid);
+        chartDisplayHelper(code, false);
     };
 
     const handleSortChange = (e) => {
@@ -136,6 +136,104 @@ function Insights() {
 
     const handleDisplayTypeChange = (e) => {
         setDisplayType(e.target.value);
+    };
+
+    const chartDisplayHelper = (code, isInitialLoad) => {
+        let initialChartData; 
+        isInitialLoad === true ? initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0] : initialChartData = companyInfoArr.find(obj => obj.Symbol === code);
+        switch (displayType) {
+            case MARKET_CAP:
+                const fetchMarketCapData = async () => {
+                    let chartObj = {};
+                    const marketCapRes = await axios.post('/stockquery/getMarketCapitializationTimeSeries', {
+                        companySymbol: initialChartData.Symbol
+                    });
+                    let marketCapData = await marketCapRes.data;
+                    marketCapData = marketCapData.map(obj => {
+                        let newObj = {};
+                        newObj.Date = obj.Date;
+                        newObj.market_capitialization = parseFloat(obj.MarketCapitalization)
+                        return newObj;
+                    });
+                    chartObj.rangeData = marketCapData;
+                    chartObj.ydataKey = "market_capitialization";
+                    chartObj.xdataKey = "Date";
+                    setChartData(chartObj);
+                }
+                fetchMarketCapData();
+                break;
+            case REVENUE:
+                const fetchRevenueData = async () => {
+                    const revenueRes = await axios.post('/stockquery/getRevenuePerShareTTMTimeSeries', {
+                        companySymbol: initialChartData.Symbol
+                    });
+                    let revenueData = revenueRes.data;
+                    let chartObj = {};
+                    revenueData = revenueData.map(obj => {
+                        console.log(obj);
+                        let newObj = {};
+                        newObj.Date = obj.Date;
+                        newObj['Annual Revenue Per Share'] = parseFloat(obj['Annual Revenue Per Share']);
+                        return newObj;
+                    });
+                    chartObj.rangeData = revenueData;
+                    chartObj.ydataKey = "Annual Revenue Per Share";
+                    chartObj.xdataKey = "Date";
+                    setChartData(chartObj);
+                };
+                fetchRevenueData();
+                break;
+            case REVENUE_GROWTH:
+                setChartData({});
+                break;
+            case PROFIT_MARGIN:
+                setChartData({});
+                break;
+            case PE_RATIO:
+                const fetchPERatioData = async () => {
+                    const revenueRes = await axios.post('/stockquery/getPERatioTimeSeries', {
+                        companySymbol: initialChartData.Symbol
+                    });
+                    let revenueData = revenueRes.data;
+                    let chartObj = {};
+                    revenueData = revenueData.map(obj => {
+                        console.log(obj);
+                        let newObj = {};
+                        newObj.Date = obj.Date;
+                        newObj['reported_EPS'] = parseFloat(obj['reportedEPS']);
+                        return newObj;
+                    });
+                    chartObj.rangeData = revenueData;
+                    chartObj.ydataKey = "reported_EPS";
+                    chartObj.xdataKey = "Date";
+                    setChartData(chartObj);
+                };
+                fetchPERatioData();
+                break;
+            case PS_RATIO:
+                const fetchPSRatioData = async () => {
+                    const psRes = await axios.post('/stockquery/getPriceToSalesRatioTTMTimeSeries', {
+                        companySymbol: initialChartData.Symbol
+                    });
+                    let psResData = psRes.data;
+                    let chartObj = {};
+                    psResData = psResData.map(obj => {
+                        let newObj = {};
+                        newObj.Date = obj.Date;
+                        newObj['PS_Ratio'] = parseFloat(obj['PriceToSalesRatioTTM']);
+                        return newObj;
+                    });
+                    chartObj.rangeData = psResData;
+                    chartObj.ydataKey = "PS_Ratio";
+                    chartObj.xdataKey = "Date";
+                    setChartData(chartObj);
+                };
+                fetchPSRatioData();
+                break;
+            default:
+                setChartData({});
+                break;
+        }
     };
 
     useEffect(() => {
@@ -176,86 +274,8 @@ function Insights() {
     }, [companyInfoArr]);
 
     useEffect(() => {
-        switch (displayType) {
-            case MARKET_CAP:
-                const fetchMarketCapData = async () => {
-                    let initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0];
-                    let chartObj = {};
-                    const marketCapRes = await axios.post('/stockquery/getMarketCapitializationTimeSeries', {
-                        companySymbol: initialChartData.Symbol
-                    });
-                    let marketCapData = await marketCapRes.data;
-                    marketCapData = marketCapData.map(obj => {
-                        let newObj = {};
-                        newObj.Date = obj.Date;
-                        newObj.market_capitialization = parseFloat(obj.MarketCapitalization)
-                        return newObj;
-                    });
-                    chartObj.rangeData = marketCapData;
-                    chartObj.ydataKey = "market_capitialization";
-                    chartObj.xdataKey = "Date";
-                    setChartData(chartObj);
-                }
-                fetchMarketCapData();
-                break;
-            case REVENUE:
-                const fetchRevenueData = async () => {
-                    let initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0];
-                    const revenueRes = await axios.post('/stockquery/getRevenuePerShareTTMTimeSeries', {
-                        companySymbol: initialChartData.Symbol
-                    });
-                    let revenueData = revenueRes.data;
-                    let chartObj = {};
-                    revenueData = revenueData.map(obj => {
-                        console.log(obj);
-                        let newObj = {};
-                        newObj.Date = obj.Date;
-                        newObj['Annual Revenue Per Share'] = parseFloat(obj['Annual Revenue Per Share']);
-                        return newObj;
-                    });
-                    chartObj.rangeData = revenueData;
-                    chartObj.ydataKey = "Annual Revenue Per Share";
-                    chartObj.xdataKey = "Date";
-                    setChartData(chartObj);
-                };
-                fetchRevenueData();
-                break;
-            case REVENUE_GROWTH:
-                setChartData({});
-                break;
-            case PROFIT_MARGIN:
-                setChartData({});
-                break;
-            case PE_RATIO:
-                setChartData({});
-                break;
-            case PS_RATIO:
-                const fetchPSRatioData = async () => {
-                    let initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0];
-                    console.log(initialChartData.Symbol)
-                    const psRes = await axios.post('/stockquery/getPriceToSalesRatioTTMTimeSeries', {
-                        companySymbol: initialChartData.Symbol
-                    });
-                    let psResData = psRes.data;
-                    let chartObj = {};
-                    psResData = psResData.map(obj => {
-                        let newObj = {};
-                        newObj.Date = obj.Date;
-                        newObj['PS_Ratio'] = parseFloat(obj['PriceToSalesRatioTTM']);
-                        return newObj;
-                    });
-                    chartObj.rangeData = psResData;
-                    chartObj.ydataKey = "PS_Ratio";
-                    chartObj.xdataKey = "Date";
-                    setChartData(chartObj);
-                };
-                fetchPSRatioData();
-                break;
-            default:
-                setChartData({});
-                break;
-        }
-        
+        console.log('help: ', companyInfoArr);
+        chartDisplayHelper(null,true);
     }, [displayType]);
 
     return (
