@@ -142,6 +142,7 @@ export default function PersonalWatchListView() {
     const [companyInfoArr, setCompanyInfoArr] = useState([]);
     const [sortValue, setSortValue] = useState('descending');
     const [displayType, setDisplayType] = useState(MARKET_CAP);
+    const [addStockValidatorFlag, setAddStockValidatorFlag] = useState(false);
 
     useEffect(() => {
         getUserData();
@@ -177,12 +178,20 @@ export default function PersonalWatchListView() {
     }
 
     async function addStock(stock) {
-        const res = await axios.post('/stockquery/addUserStockTickerToDb', {
-            stockCode: stock
+        const validateRes = await axios.get('/stockquery/allStocksCodeAndName');
+        const validateData = await validateRes.data;
+        validateData.forEach(async obj => {
+            if(obj.symbol === stock){
+                const res = await axios.post('/stockquery/addUserStockTickerToDb', {
+                    stockCode: stock
+                });
+        
+                if (res.data.post)
+                    await getUserData();
+                setAddStockValidatorFlag(false);
+            }
         });
-
-        if (res.data.post)
-            await getUserData();
+        setAddStockValidatorFlag(true);
     }
 
     async function removeStock(stock) {
@@ -242,6 +251,7 @@ export default function PersonalWatchListView() {
     function adminPanel() {
         return <>
             <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Manage Stocks</Typography>
+            {addStockValidatorFlag ? <h3>You must enter valid stock ticker!</h3> : ''}
             {stockManager()}
         </>
     }

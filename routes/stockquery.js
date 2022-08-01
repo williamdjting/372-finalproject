@@ -105,7 +105,6 @@ router.post('/getRevenuePerShareTTMTimeSeries', async (req, res) => {
     let incomeStatementData = incomeStatementRes.data['annualReports'];
     let retObj = [];
     for (let index = 0; index < balanceSheetResData.length && index < incomeStatementData.length; index++) {
-        // console.log([])
         retObj.unshift({
             "Date": balanceSheetResData[index].fiscalDateEnding,
             "Annual Revenue Per Share": (incomeStatementData[index].totalRevenue / balanceSheetResData[index].commonStockSharesOutstanding).toFixed(2)
@@ -121,6 +120,10 @@ router.post('/getMarketCapitializationTimeSeries', async (req, res) => {// commo
     let stockPriceTimeSeriesData = stockPriceTimeSeriesRes.data['Monthly Time Series'];
     let retObj = [];
     let hashMap = {};
+    if(balanceSheetResData === undefined) {
+        res.send([]);
+        return;
+    }
     balanceSheetResData.forEach(obj => {
         hashMap[obj.fiscalDateEnding.slice(0,8)] = obj.commonStockSharesOutstanding;
     });

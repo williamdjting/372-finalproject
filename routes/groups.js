@@ -115,7 +115,27 @@ router.get('/get', async (req, res) => {
     }
 });
 
-router.post('/addstock', async (req, res) => {
+router.get('/getTickerFromGroups', async (req, res) => {
+    try {
+        const existingGroup = await Group.find({ members: req.user.username });
+        if (!existingGroup)
+            return res.json({ success: false });
+        
+        let groupStockCode = [];
+        existingGroup.forEach(obj => {
+            obj.stockList.forEach(ticketCode => {
+                if (!groupStockCode.includes(ticketCode)) {
+                    groupStockCode.push(ticketCode);
+                }
+            })
+        });
+        res.json({ success: true, group: groupStockCode });
+    } catch (err) {
+        res.json({ success: false });
+    }
+});
+
+router.post('/addstock', async (req, res) => {ç
     try {
         const existingGroup = await Group.findOne({ name: req.body.name });
         if (!existingGroup)

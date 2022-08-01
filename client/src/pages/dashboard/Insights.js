@@ -5,6 +5,7 @@ import {
     TableRow, Paper, Select, MenuItem, InputLabel
 } from '@mui/material';
 import StockInfoContainer from '../../components/viz/StockInfoContainer';
+import Loading from "../../components/Loading";
 
 import '../../stylesheets/Dashboard9.css'
 import axios from 'axios';
@@ -122,6 +123,7 @@ function Insights() {
     const [sortValue, setSortValue] = useState('descending');
     const [displayType, setDisplayType] = useState(MARKET_CAP);
     const [chartData, setChartData] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
 
     const handleRowClick = (e) => {
         const code = e.currentTarget.getAttribute('data-code');
@@ -169,7 +171,6 @@ function Insights() {
                     let revenueData = revenueRes.data;
                     let chartObj = {};
                     revenueData = revenueData.map(obj => {
-                        console.log(obj);
                         let newObj = {};
                         newObj.Date = obj.Date;
                         newObj['Annual Revenue Per Share'] = parseFloat(obj['Annual Revenue Per Share']);
@@ -197,7 +198,6 @@ function Insights() {
                     let revenueData = revenueRes.data;
                     let chartObj = {};
                     revenueData = revenueData.map(obj => {
-                        console.log(obj);
                         let newObj = {};
                         newObj.Date = obj.Date;
                         newObj['reported_EPS'] = parseFloat(obj['reportedEPS']);
@@ -240,10 +240,26 @@ function Insights() {
 
     useEffect(() => {
         const fetchData = async () => {
+            const groupStockResponse = await axios.get('/groups/getTickerFromGroups');
+            const groupStockData = await groupStockResponse.data.group;
             const response = await axios.get('/stockquery/getUserStockListFromDb');
             const objectArr = await response.data;
+            let codeArr = [];
+            objectArr.forEach(obj => {
+                codeArr.push(obj.code);
+            });
+            groupStockData.forEach(tickerCode => {
+                if(!codeArr.includes(tickerCode)){
+                    codeArr.push(tickerCode);
+                } 
+            });
+            codeArr = codeArr.map(tickerCode => {
+                let obj = {}
+                obj.code = tickerCode;
+                return obj;
+            })
             let companyInfoArr = [];
-            for await (let arrObj of objectArr) {
+            for await (let arrObj of codeArr) {
                 const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
                     params: { companySymbol: arrObj.code }
                 });
@@ -251,7 +267,6 @@ function Insights() {
             }
             setCompanyInfoArr(companyInfoArr);
             let initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0];
-            console.log('?', initialChartData);
             let chartObj = {};
             const marketCapRes= await axios.post('/stockquery/getMarketCapitializationTimeSeries', {
                 companySymbol: initialChartData.Symbol
@@ -268,6 +283,7 @@ function Insights() {
             chartObj.xdataKey = "Date";
             chartObj.code = initialChartData.Symbol;
             setChartData(chartObj);
+            setIsLoading(false);
 
         };
         fetchData();
@@ -281,6 +297,7 @@ function Insights() {
     }, [displayType]);
 
     return (
+        isLoading ? <Loading /> :
         <div>
             <h1 align="center">Insights</h1>
             <h3>{Object.keys(chartData).length !== 0 ? `Current selected ticker: ${chartData.code}` : ''}</h3>
