@@ -145,6 +145,9 @@ function Insights() {
             case MARKET_CAP:
                 const fetchMarketCapData = async () => {
                     let chartObj = {};
+                    if (initialChartData === undefined) {
+                        return;
+                    }
                     const marketCapRes = await axios.post('/stockquery/getMarketCapitializationTimeSeries', {
                         companySymbol: initialChartData.Symbol
                     });
@@ -161,7 +164,9 @@ function Insights() {
                     chartObj.code = initialChartData.Symbol;
                     setChartData(chartObj);
                 }
+             
                 fetchMarketCapData();
+            
                 break;
             case REVENUE:
                 const fetchRevenueData = async () => {
@@ -299,7 +304,6 @@ function Insights() {
     return (
         isLoading ? <Loading /> :
         <div>
-            <h1 align="center">Insights</h1>
             <h3>{Object.keys(chartData).length !== 0 ? `Current selected ticker: ${chartData.code}` : ''}</h3>
             <div>
                 {Object.keys(chartData).length !== 0 ? <StockInfoContainer rangeData={chartData.rangeData} xdataKey={chartData.xdataKey} ydataKey={chartData.ydataKey} /> : <h3>{`${tableTitleMapHelper(displayType)} visualization is not supported`}</h3>}
