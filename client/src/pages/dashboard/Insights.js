@@ -139,7 +139,7 @@ function Insights() {
     };
 
     const chartDisplayHelper = (code, isInitialLoad) => {
-        let initialChartData; 
+        let initialChartData;
         isInitialLoad === true ? initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0] : initialChartData = companyInfoArr.find(obj => obj.Symbol === code);
         switch (displayType) {
             case MARKET_CAP:
@@ -164,9 +164,9 @@ function Insights() {
                     chartObj.code = initialChartData.Symbol;
                     setChartData(chartObj);
                 }
-             
+
                 fetchMarketCapData();
-            
+
                 break;
             case REVENUE:
                 const fetchRevenueData = async () => {
@@ -254,9 +254,9 @@ function Insights() {
                 codeArr.push(obj.code);
             });
             groupStockData.forEach(tickerCode => {
-                if(!codeArr.includes(tickerCode)){
+                if (!codeArr.includes(tickerCode)) {
                     codeArr.push(tickerCode);
-                } 
+                }
             });
             codeArr = codeArr.map(tickerCode => {
                 let obj = {}
@@ -268,13 +268,14 @@ function Insights() {
                 const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
                     params: { companySymbol: arrObj.code }
                 });
-                companyInfoArr.push(await companyInfoRes.data);
+                if (companyInfoRes.data['Symbol'] !== undefined)
+                    companyInfoArr.push(await companyInfoRes.data);
             }
             setCompanyInfoArr(companyInfoArr);
             let initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0];
             let chartObj = {};
-            const marketCapRes= await axios.post('/stockquery/getMarketCapitializationTimeSeries', {
-                companySymbol: initialChartData.Symbol
+            const marketCapRes = await axios.post('/stockquery/getMarketCapitializationTimeSeries', {
+                companySymbol: initialChartData?.Symbol
             });
             let marketCapData = await marketCapRes.data;
             marketCapData = marketCapData.map(obj => {
@@ -286,7 +287,7 @@ function Insights() {
             chartObj.rangeData = marketCapData;
             chartObj.ydataKey = "market_capitialization";
             chartObj.xdataKey = "Date";
-            chartObj.code = initialChartData.Symbol;
+            chartObj.code = initialChartData?.Symbol;
             setChartData(chartObj);
             setIsLoading(false);
 
@@ -298,65 +299,65 @@ function Insights() {
     }, [companyInfoArr]);
 
     useEffect(() => {
-        chartDisplayHelper(null,true);
+        chartDisplayHelper(null, true);
     }, [displayType]);
 
     return (
         isLoading ? <Loading /> :
-        <div>
-            <h3>{Object.keys(chartData).length !== 0 ? `Current selected ticker: ${chartData.code}` : ''}</h3>
             <div>
-                {Object.keys(chartData).length !== 0 ? <StockInfoContainer rangeData={chartData.rangeData} xdataKey={chartData.xdataKey} ydataKey={chartData.ydataKey} /> : <h3>{`${tableTitleMapHelper(displayType)} visualization is not supported`}</h3>}
-            </div>
-            <div style={{display: 'inline-flex'}}>
-                <div style={{marginRight: '20px'}}>
-                <InputLabel id="sortLabel">Sort</InputLabel>
-                <Select labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
-                    <MenuItem value='ascending'>Ascending</MenuItem>
-                    <MenuItem value='descending'>Descending</MenuItem>
-                </Select>
-                </div>
+                <h3>{Object.keys(chartData).length !== 0 ? `Current selected ticker: ${chartData.code}` : ''}</h3>
                 <div>
-                <InputLabel id="displayLabel">Display Type</InputLabel>
-                <Select labelId="displayLabel" id="displayType" value={displayType} label="displayType" onChange={handleDisplayTypeChange}>
-                    <MenuItem value={MARKET_CAP}>Market Cap</MenuItem>
-                    <MenuItem value={REVENUE}>Revenue Per Share(TTM)</MenuItem>
-                    <MenuItem value={REVENUE_GROWTH}>Quarterly Revenue Growth(YoY)</MenuItem>
-                    <MenuItem value={PROFIT_MARGIN}>Profit Margin</MenuItem>
-                    <MenuItem value={PE_RATIO}>P/E Ratio</MenuItem>
-                    <MenuItem value={PS_RATIO}>P/S Ratio</MenuItem>
-                </Select>
+                    {Object.keys(chartData).length !== 0 ? <StockInfoContainer rangeData={chartData.rangeData} xdataKey={chartData.xdataKey} ydataKey={chartData.ydataKey} /> : <h3>{`${tableTitleMapHelper(displayType)} visualization is not supported`}</h3>}
                 </div>
-            </div>
-            
-            <TableContainer align="right" component={Paper} table-id={MARKET_CAP}>
-                <Table sx={{ minWidth: 150, maxWidth: 1200 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                        <TableCell align="left"><b>Company Name</b></TableCell>
-                            <TableCell align="right"><b>{tableTitleMapHelper(displayType)}</b></TableCell>
-                            
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5).map((row) => (
-                            <TableRow
-                                data-tableid={displayType}
-                                data-code={row.Symbol}
-                                key={row.Symbol}
-                                onClick={handleRowClick}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                            >
-                                <TableCell align="left" component="th" scope="row">
-                                    {row.Name}
-                                </TableCell>
-                                <TableCell align="right">{valueFormatHelper(displayType, row[displayType])}</TableCell>
+                <div style={{ display: 'inline-flex' }}>
+                    <div style={{ marginRight: '20px' }}>
+                        <InputLabel id="sortLabel">Sort</InputLabel>
+                        <Select labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
+                            <MenuItem value='ascending'>Ascending</MenuItem>
+                            <MenuItem value='descending'>Descending</MenuItem>
+                        </Select>
+                    </div>
+                    <div>
+                        <InputLabel id="displayLabel">Display Type</InputLabel>
+                        <Select labelId="displayLabel" id="displayType" value={displayType} label="displayType" onChange={handleDisplayTypeChange}>
+                            <MenuItem value={MARKET_CAP}>Market Cap</MenuItem>
+                            <MenuItem value={REVENUE}>Revenue Per Share(TTM)</MenuItem>
+                            <MenuItem value={REVENUE_GROWTH}>Quarterly Revenue Growth(YoY)</MenuItem>
+                            <MenuItem value={PROFIT_MARGIN}>Profit Margin</MenuItem>
+                            <MenuItem value={PE_RATIO}>P/E Ratio</MenuItem>
+                            <MenuItem value={PS_RATIO}>P/S Ratio</MenuItem>
+                        </Select>
+                    </div>
+                </div>
+
+                <TableContainer align="right" component={Paper} table-id={MARKET_CAP}>
+                    <Table sx={{ minWidth: 150, maxWidth: 1200 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="left"><b>Company Name</b></TableCell>
+                                <TableCell align="right"><b>{tableTitleMapHelper(displayType)}</b></TableCell>
+
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
+                        </TableHead>
+                        <TableBody>
+                            {companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5).map((row) => (
+                                <TableRow
+                                    data-tableid={displayType}
+                                    data-code={row.Symbol}
+                                    key={row.Symbol}
+                                    onClick={handleRowClick}
+                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                    <TableCell align="left" component="th" scope="row">
+                                        {row.Name}
+                                    </TableCell>
+                                    <TableCell align="right">{valueFormatHelper(displayType, row[displayType])}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </div>
     )
 }
 
