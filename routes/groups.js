@@ -120,7 +120,7 @@ router.get('/getTickerFromGroups', async (req, res) => {
         const existingGroup = await Group.find({ members: req.user.username });
         if (!existingGroup)
             return res.json({ success: false });
-        
+
         let groupStockCode = [];
         existingGroup.forEach(obj => {
             obj.stockList.forEach(ticketCode => {
@@ -135,7 +135,7 @@ router.get('/getTickerFromGroups', async (req, res) => {
     }
 });
 
-router.post('/addstock', async (req, res) => {ç
+router.post('/addstock', async (req, res) => {
     try {
         const existingGroup = await Group.findOne({ name: req.body.name });
         if (!existingGroup)
