@@ -120,6 +120,10 @@ router.post('/getMarketCapitializationTimeSeries', async (req, res) => {// commo
     let stockPriceTimeSeriesData = stockPriceTimeSeriesRes.data['Monthly Time Series'];
     let retObj = [];
     let hashMap = {};
+    if(balanceSheetResData === undefined) {
+        res.send([]);
+        return;
+    }
     balanceSheetResData.forEach(obj => {
         hashMap[obj.fiscalDateEnding.slice(0,8)] = obj.commonStockSharesOutstanding;
     });
