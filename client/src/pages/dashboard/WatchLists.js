@@ -95,7 +95,7 @@ export default function WatchLists() {
             <div>
                 <div>
                     <Typography component="h1" variant="h2" color="textPrimary" sx={{ mb: 1 }}>Personal WatchList</Typography>
-                    <Link underline='none' component={RouterLink} to={"/dashboard2"}>
+                    <Link underline='none' component={RouterLink} to={"/dashboard/personal"}>
                         <Button variant="contained" color="primary" startIcon={<Person />}>View Personal WatchList</Button>
                     </Link>
                 </div>
