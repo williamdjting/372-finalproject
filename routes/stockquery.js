@@ -14,6 +14,8 @@ const LISTING_STATUS = 'LISTING_STATUS';
 const TIME_SERIES_DAILY = 'TIME_SERIES_DAILY';
 const BALANCE_SHEET = 'BALANCE_SHEET';
 const INCOME_STATEMENT = 'INCOME_STATEMENT';
+const TIME_SERIES_MONTHLY = 'TIME_SERIES_MONTHLY';
+const EARNINGS = 'EARNINGS';
 const TTL = 5000000;
 const TTL_INTERVAL = 5000;
 
@@ -99,8 +101,8 @@ router.get('/getCompanyStockPriceTimeSeries', async (req, res) => {
 router.post('/getRevenuePerShareTTMTimeSeries', async (req, res) => {
     let balanceSheetRes = await axios.get(createQueryUrl(BALANCE_SHEET, req.body.companySymbol));
     let incomeStatementRes = await axios.get(createQueryUrl(INCOME_STATEMENT, req.body.companySymbol));
-    let balanceSheetResData = balanceSheetRes.data['annualReports']
-    let incomeStatementData = incomeStatementRes.data['annualReports']
+    let balanceSheetResData = balanceSheetRes.data['annualReports'];
+    let incomeStatementData = incomeStatementRes.data['annualReports'];
     let retObj = [];
     for (let index = 0; index < balanceSheetResData.length && index < incomeStatementData.length; index++) {
         // console.log([])
@@ -109,6 +111,80 @@ router.post('/getRevenuePerShareTTMTimeSeries', async (req, res) => {
             "Annual Revenue Per Share": (incomeStatementData[index].totalRevenue / balanceSheetResData[index].commonStockSharesOutstanding).toFixed(2)
         });
     }
+    res.send(retObj);
+});
+
+router.post('/getMarketCapitializationTimeSeries', async (req, res) => {// commonStockSharesOutstanding * stock price at given date (balance sheet, income statement)
+    let balanceSheetRes = await axios.get(createQueryUrl(BALANCE_SHEET, req.body.companySymbol));
+    let stockPriceTimeSeriesRes = await axios.get(createQueryUrl(TIME_SERIES_MONTHLY, req.body.companySymbol));
+    let balanceSheetResData = balanceSheetRes.data['annualReports'];
+    let stockPriceTimeSeriesData = stockPriceTimeSeriesRes.data['Monthly Time Series'];
+    let retObj = [];
+    let hashMap = {};
+    balanceSheetResData.forEach(obj => {
+        hashMap[obj.fiscalDateEnding.slice(0,8)] = obj.commonStockSharesOutstanding;
+    });
+    Object.keys(stockPriceTimeSeriesData).forEach(key => {
+        if( hashMap[key.slice(0,8)] !== undefined) {
+            retObj.unshift({
+                "Date": key,
+                "MarketCapitalization": (parseFloat(stockPriceTimeSeriesData[key]["4. close"]) * parseFloat(hashMap[key.slice(0,8)])).toFixed(2)
+            });
+        }
+    })
+    res.send(retObj);
+});
+
+router.post('/getPriceToSalesRatioTTMTimeSeries', async (req, res) => {// market cap / total revenue of the last 12 months(1year)
+    let balanceSheetRes = await axios.get(createQueryUrl(BALANCE_SHEET, req.body.companySymbol));
+    let stockPriceTimeSeriesRes = await axios.get(createQueryUrl(TIME_SERIES_MONTHLY, req.body.companySymbol));
+    let incomeStatementRes = await axios.get(createQueryUrl(INCOME_STATEMENT, req.body.companySymbol));
+    let incomeStatementData = incomeStatementRes.data['annualReports'];
+    let balanceSheetResData = balanceSheetRes.data['annualReports'];
+    let stockPriceTimeSeriesData = stockPriceTimeSeriesRes.data['Monthly Time Series'];
+    let retObj = [];
+    let balanceSheetHashMap = {};
+    let incomeStatementHashMap = {};
+    balanceSheetResData.forEach(obj => {
+        balanceSheetHashMap[obj.fiscalDateEnding.slice(0,8)] = obj.commonStockSharesOutstanding;
+    });
+    incomeStatementData.forEach(obj => {
+        incomeStatementHashMap[obj.fiscalDateEnding.slice(0,8)] = obj.totalRevenue;
+    });
+    Object.keys(stockPriceTimeSeriesData).forEach(key => {
+        if( incomeStatementHashMap[key.slice(0,8)] !== undefined && balanceSheetHashMap[key.slice(0,8)]) {
+            console.log(parseFloat(balanceSheetHashMap[key.slice(0,8)]));
+            console.log(key.slice(0,8))
+            retObj.unshift({
+                "Date": key,
+                "PriceToSalesRatioTTM": ( (parseFloat(stockPriceTimeSeriesData[key]["4. close"]) * parseFloat(balanceSheetHashMap[key.slice(0,8)])) / parseFloat(incomeStatementHashMap[key.slice(0,8)]) ).toFixed(2)
+            });
+        }
+    })
+    console.log(retObj)
+    res.send(retObj);
+});
+
+router.post('/getPERatioTimeSeries', async (req, res) => {// market cap / total revenue of the last 12 months(1year)
+    let stockPriceTimeSeriesRes = await axios.get(createQueryUrl(TIME_SERIES_MONTHLY, req.body.companySymbol));
+    let earningsTimeSeriesRes = await axios.get(createQueryUrl(EARNINGS, req.body.companySymbol));
+
+    let stockPriceTimeSeriesData = stockPriceTimeSeriesRes.data['Monthly Time Series'];
+    let earningsTimeSeriesData = earningsTimeSeriesRes.data['annualEarnings'];
+    let earningHashMap = {};
+    let retObj = [];
+    earningsTimeSeriesData.forEach(obj => {
+        earningHashMap[obj.fiscalDateEnding.slice(0,8)] = obj.reportedEPS;
+    });
+    Object.keys(stockPriceTimeSeriesData).forEach(key => {
+        if( earningHashMap[key.slice(0,8)]) {
+            retObj.unshift({
+                "Date": key,
+                "reportedEPS": ( (parseFloat(stockPriceTimeSeriesData[key]["4. close"]) / parseFloat(earningHashMap[key.slice(0,8)])) ).toFixed(2)
+            });
+        }
+    })
+
     res.send(retObj);
 });
 
@@ -125,11 +201,20 @@ const createQueryUrl = (func, symbol, interval, timePeriod, seriesType) => {
             break;
         case LISTING_STATUS:
             url = `${ALPHA_VANTAGE_QUERY_URL}${func}&apikey=${API_KEY}`;
+            break;
         case TIME_SERIES_DAILY:
             url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&outputsize=compact&apikey=${API_KEY}`;
+            break;
         case BALANCE_SHEET:
             url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&apikey=${API_KEY}`;
+            break;
         case INCOME_STATEMENT:
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&apikey=${API_KEY}`;
+            break;
+        case TIME_SERIES_MONTHLY:
+            url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&apikey=${API_KEY}`;
+            break;
+        case EARNINGS:
             url = `${ALPHA_VANTAGE_QUERY_URL}${func}&symbol=${symbol}&apikey=${API_KEY}`;
     }///https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol=IBM&apikey=demo
     return url

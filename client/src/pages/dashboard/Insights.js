@@ -120,13 +120,12 @@ const valueFormatHelper = (displayType, rowValue) => {
 function Insights() {
     const [companyInfoArr, setCompanyInfoArr] = useState([]);
     const [sortValue, setSortValue] = useState('descending');
-    const [revenuePerShareTS, setRevenuePerShareTS] = useState([]);
     const [displayType, setDisplayType] = useState(MARKET_CAP);
+    const [chartData, setChartData] = useState({});
 
     const handleRowClick = (e) => {
         const code = e.currentTarget.getAttribute('data-code');
-        const tableid = e.currentTarget.getAttribute('data-tableid');
-        console.log(code, tableid);
+        chartDisplayHelper(code, false);
     };
 
     const handleSortChange = (e) => {
@@ -137,25 +136,139 @@ function Insights() {
         setDisplayType(e.target.value);
     };
 
+    const chartDisplayHelper = (code, isInitialLoad) => {
+        let initialChartData; 
+        isInitialLoad === true ? initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0] : initialChartData = companyInfoArr.find(obj => obj.Symbol === code);
+        switch (displayType) {
+            case MARKET_CAP:
+                const fetchMarketCapData = async () => {
+                    let chartObj = {};
+                    const marketCapRes = await axios.post('/stockquery/getMarketCapitializationTimeSeries', {
+                        companySymbol: initialChartData.Symbol
+                    });
+                    let marketCapData = await marketCapRes.data;
+                    marketCapData = marketCapData.map(obj => {
+                        let newObj = {};
+                        newObj.Date = obj.Date;
+                        newObj.market_capitialization = parseFloat(obj.MarketCapitalization)
+                        return newObj;
+                    });
+                    chartObj.rangeData = marketCapData;
+                    chartObj.ydataKey = "market_capitialization";
+                    chartObj.xdataKey = "Date";
+                    chartObj.code = initialChartData.Symbol;
+                    setChartData(chartObj);
+                }
+                fetchMarketCapData();
+                break;
+            case REVENUE:
+                const fetchRevenueData = async () => {
+                    const revenueRes = await axios.post('/stockquery/getRevenuePerShareTTMTimeSeries', {
+                        companySymbol: initialChartData.Symbol
+                    });
+                    let revenueData = revenueRes.data;
+                    let chartObj = {};
+                    revenueData = revenueData.map(obj => {
+                        console.log(obj);
+                        let newObj = {};
+                        newObj.Date = obj.Date;
+                        newObj['Annual Revenue Per Share'] = parseFloat(obj['Annual Revenue Per Share']);
+                        return newObj;
+                    });
+                    chartObj.rangeData = revenueData;
+                    chartObj.ydataKey = "Annual Revenue Per Share";
+                    chartObj.xdataKey = "Date";
+                    chartObj.code = initialChartData.Symbol;
+                    setChartData(chartObj);
+                };
+                fetchRevenueData();
+                break;
+            case REVENUE_GROWTH:
+                setChartData({});
+                break;
+            case PROFIT_MARGIN:
+                setChartData({});
+                break;
+            case PE_RATIO:
+                const fetchPERatioData = async () => {
+                    const revenueRes = await axios.post('/stockquery/getPERatioTimeSeries', {
+                        companySymbol: initialChartData.Symbol
+                    });
+                    let revenueData = revenueRes.data;
+                    let chartObj = {};
+                    revenueData = revenueData.map(obj => {
+                        console.log(obj);
+                        let newObj = {};
+                        newObj.Date = obj.Date;
+                        newObj['reported_EPS'] = parseFloat(obj['reportedEPS']);
+                        return newObj;
+                    });
+                    chartObj.rangeData = revenueData;
+                    chartObj.ydataKey = "reported_EPS";
+                    chartObj.xdataKey = "Date";
+                    chartObj.code = initialChartData.Symbol;
+                    setChartData(chartObj);
+                };
+                fetchPERatioData();
+                break;
+            case PS_RATIO:
+                const fetchPSRatioData = async () => {
+                    const psRes = await axios.post('/stockquery/getPriceToSalesRatioTTMTimeSeries', {
+                        companySymbol: initialChartData.Symbol
+                    });
+                    let psResData = psRes.data;
+                    let chartObj = {};
+                    psResData = psResData.map(obj => {
+                        let newObj = {};
+                        newObj.Date = obj.Date;
+                        newObj['PS_Ratio'] = parseFloat(obj['PriceToSalesRatioTTM']);
+                        return newObj;
+                    });
+                    chartObj.rangeData = psResData;
+                    chartObj.ydataKey = "PS_Ratio";
+                    chartObj.xdataKey = "Date";
+                    chartObj.code = initialChartData.Symbol;
+                    setChartData(chartObj);
+                };
+                fetchPSRatioData();
+                break;
+            default:
+                setChartData({});
+                break;
+        }
+    };
+
     useEffect(() => {
         const fetchData = async () => {
-            //prototyping
-            const test = await axios.post('/stockquery/getRevenuePerShareTTMTimeSeries', {
-                companySymbol: 'IBM'
-            })
-            const testData = await test.data;
-            setRevenuePerShareTS(testData)
             const response = await axios.get('/stockquery/getUserStockListFromDb');
             const objectArr = await response.data;
             let companyInfoArr = [];
             for await (let arrObj of objectArr) {
-                console.log(arrObj);
                 const companyInfoRes = await axios.get('/stockquery/companyStockOverview', {
                     params: { companySymbol: arrObj.code }
-                })
+                });
                 companyInfoArr.push(await companyInfoRes.data);
             }
             setCompanyInfoArr(companyInfoArr);
+            let initialChartData = companyInfoArrSortAndFilter(companyInfoArr, sortValue, displayType, 5)[0];
+            console.log('?', initialChartData);
+            let chartObj = {};
+            const marketCapRes= await axios.post('/stockquery/getMarketCapitializationTimeSeries', {
+                companySymbol: initialChartData.Symbol
+            });
+            let marketCapData = await marketCapRes.data;
+            marketCapData = marketCapData.map(obj => {
+                let newObj = {};
+                newObj.Date = obj.Date;
+                newObj.market_capitialization = parseFloat(obj.MarketCapitalization)
+                return newObj;
+            });
+            chartObj.rangeData = marketCapData;
+            chartObj.ydataKey = "market_capitialization";
+            chartObj.xdataKey = "Date";
+            chartObj.code = initialChartData.Symbol;
+            setChartData(chartObj);
+
         };
         fetchData();
     }, []);
@@ -163,32 +276,45 @@ function Insights() {
     useEffect(() => {
     }, [companyInfoArr]);
 
+    useEffect(() => {
+        chartDisplayHelper(null,true);
+    }, [displayType]);
+
     return (
         <div>
-            <h1 align="center">Your Insights</h1>
-            <h2 align="center">[sorting tab, react hook goes here]</h2>
-            <StockInfoContainer rangeData={revenuePerShareTS} />
-            <InputLabel id="sortLabel">Sort</InputLabel>
-            <Select labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
-                <MenuItem value='ascending'>Ascending</MenuItem>
-                <MenuItem value='descending'>Descending</MenuItem>
-            </Select>
-            <InputLabel id="displayLabel">Display Type</InputLabel>
-            <Select labelId="displayLabel" id="displayType" value={displayType} label="displayType" onChange={handleDisplayTypeChange}>
-                <MenuItem value={MARKET_CAP}>Market Cap</MenuItem>
-                <MenuItem value={REVENUE}>Revenue Per Share(TTM)</MenuItem>
-                <MenuItem value={REVENUE_GROWTH}>Quarterly Revenue Growth(YoY)</MenuItem>
-                <MenuItem value={PROFIT_MARGIN}>Profit Margin</MenuItem>
-                <MenuItem value={PE_RATIO}>P/E Ratio</MenuItem>
-                <MenuItem value={PS_RATIO}>P/S Ratio</MenuItem>
-            </Select>
+            <h1 align="center">Insights</h1>
+            <h3>{Object.keys(chartData).length !== 0 ? `Current selected ticker: ${chartData.code}` : ''}</h3>
+            <div>
+                {Object.keys(chartData).length !== 0 ? <StockInfoContainer rangeData={chartData.rangeData} xdataKey={chartData.xdataKey} ydataKey={chartData.ydataKey} /> : <h3>{`${tableTitleMapHelper(displayType)} visualization is not supported`}</h3>}
+            </div>
+            <div style={{display: 'inline-flex'}}>
+                <div style={{marginRight: '20px'}}>
+                <InputLabel id="sortLabel">Sort</InputLabel>
+                <Select labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
+                    <MenuItem value='ascending'>Ascending</MenuItem>
+                    <MenuItem value='descending'>Descending</MenuItem>
+                </Select>
+                </div>
+                <div>
+                <InputLabel id="displayLabel">Display Type</InputLabel>
+                <Select labelId="displayLabel" id="displayType" value={displayType} label="displayType" onChange={handleDisplayTypeChange}>
+                    <MenuItem value={MARKET_CAP}>Market Cap</MenuItem>
+                    <MenuItem value={REVENUE}>Revenue Per Share(TTM)</MenuItem>
+                    <MenuItem value={REVENUE_GROWTH}>Quarterly Revenue Growth(YoY)</MenuItem>
+                    <MenuItem value={PROFIT_MARGIN}>Profit Margin</MenuItem>
+                    <MenuItem value={PE_RATIO}>P/E Ratio</MenuItem>
+                    <MenuItem value={PS_RATIO}>P/S Ratio</MenuItem>
+                </Select>
+                </div>
+            </div>
+            
             <TableContainer align="right" component={Paper} table-id={MARKET_CAP}>
                 <Table sx={{ minWidth: 150, maxWidth: 1200 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell align="left"><b>{tableTitleMapHelper(displayType)}</b></TableCell>
-                            <TableCell align="right"><b></b></TableCell>
-                            <TableCell align="right"><b></b></TableCell>
+                        <TableCell align="left"><b>Company Name</b></TableCell>
+                            <TableCell align="right"><b>{tableTitleMapHelper(displayType)}</b></TableCell>
+                            
                         </TableRow>
                     </TableHead>
                     <TableBody>
