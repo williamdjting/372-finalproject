@@ -125,8 +125,6 @@ function Insights() {
 
     const handleRowClick = (e) => {
         const code = e.currentTarget.getAttribute('data-code');
-        const tableid = e.currentTarget.getAttribute('data-tableid');
-        console.log(code, tableid);
         chartDisplayHelper(code, false);
     };
 
@@ -158,6 +156,7 @@ function Insights() {
                     chartObj.rangeData = marketCapData;
                     chartObj.ydataKey = "market_capitialization";
                     chartObj.xdataKey = "Date";
+                    chartObj.code = initialChartData.Symbol;
                     setChartData(chartObj);
                 }
                 fetchMarketCapData();
@@ -179,6 +178,7 @@ function Insights() {
                     chartObj.rangeData = revenueData;
                     chartObj.ydataKey = "Annual Revenue Per Share";
                     chartObj.xdataKey = "Date";
+                    chartObj.code = initialChartData.Symbol;
                     setChartData(chartObj);
                 };
                 fetchRevenueData();
@@ -206,6 +206,7 @@ function Insights() {
                     chartObj.rangeData = revenueData;
                     chartObj.ydataKey = "reported_EPS";
                     chartObj.xdataKey = "Date";
+                    chartObj.code = initialChartData.Symbol;
                     setChartData(chartObj);
                 };
                 fetchPERatioData();
@@ -226,6 +227,7 @@ function Insights() {
                     chartObj.rangeData = psResData;
                     chartObj.ydataKey = "PS_Ratio";
                     chartObj.xdataKey = "Date";
+                    chartObj.code = initialChartData.Symbol;
                     setChartData(chartObj);
                 };
                 fetchPSRatioData();
@@ -264,6 +266,7 @@ function Insights() {
             chartObj.rangeData = marketCapData;
             chartObj.ydataKey = "market_capitialization";
             chartObj.xdataKey = "Date";
+            chartObj.code = initialChartData.Symbol;
             setChartData(chartObj);
 
         };
@@ -274,16 +277,18 @@ function Insights() {
     }, [companyInfoArr]);
 
     useEffect(() => {
-        console.log('help: ', companyInfoArr);
         chartDisplayHelper(null,true);
     }, [displayType]);
 
     return (
         <div>
-            <h1 align="center">Your Insights</h1>
-            {Object.keys(chartData).length !== 0 ? <StockInfoContainer rangeData={chartData.rangeData} xdataKey={chartData.xdataKey} ydataKey={chartData.ydataKey} /> : <h3>{`${tableTitleMapHelper(displayType)} visualization is not supported`}</h3>}
+            <h1 align="center">Insights</h1>
+            <h3>{Object.keys(chartData).length !== 0 ? `Current selected ticker: ${chartData.code}` : ''}</h3>
+            <div>
+                {Object.keys(chartData).length !== 0 ? <StockInfoContainer rangeData={chartData.rangeData} xdataKey={chartData.xdataKey} ydataKey={chartData.ydataKey} /> : <h3>{`${tableTitleMapHelper(displayType)} visualization is not supported`}</h3>}
+            </div>
             <div style={{display: 'inline-flex'}}>
-                <div>
+                <div style={{marginRight: '20px'}}>
                 <InputLabel id="sortLabel">Sort</InputLabel>
                 <Select labelId="sortLabel" id="sortLabel" value={sortValue} label="sort" onChange={handleSortChange}>
                     <MenuItem value='ascending'>Ascending</MenuItem>
