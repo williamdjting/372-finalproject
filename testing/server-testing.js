@@ -97,13 +97,35 @@ describe('testing functions in stockquery.js', function() {
 
 
 
-// describe('testing functions in users.js', function() {
-//   //tests associated with querying the api
-//   it('')
+describe('testing functions in users.js', function() {
+  //tests associated with querying the api
+  it('register a new user', function(done){
+    var newUser = {'username': "william123", 'email' : "william123@gmail.com", "password" : "williampw", "stockCodes" : []}
+    chai.request(server)
+      .post('/users/register').send(newUser)
+      .end(function(err,res){
+        res.should.have.status(200);
+        res.should.be.json;
+        done();
+      });
+  });
+
+  it('login an existing user', function(done){
+    var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
+    chai.request(server)
+      .post('/users/login').send(existingUser)
+      .end(function(err,res){
+        res.should.have.status(200);
+        res.should.be.json;
+        res.body.login.should.be.equal(true);
+        done();
+      });
+  });
 
 
 
-// })
+// end of describe
+})
 
 
 // describe('testing functions in groups.js', function() {
