@@ -24,6 +24,7 @@ let companyOverviewCache = [];
 router.get('/companyStockOverview', async (req, res) => {
     try {
         const cacheResponseObj = await findCompanyOverviewCache(req.body.companySymbol);
+        // console.log("this is cacheResponseObj",cacheResponseObj );
         if (cacheResponseObj)
             return res.json(cacheResponseObj.companyOverview);
 

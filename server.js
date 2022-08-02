@@ -23,10 +23,6 @@ app.use(express.static(path.join(__dirname, 'client', 'build')));
 app.use(cookieparser());
 
 
-app.get('/', (req, res) => {
-    res.send('Hello World!');
-  });
-
 app.use('/users', usersRouter.routes);
 app.use('/groups', usersRouter.HasToken, groupsRouter);
 app.use('/stockquery', usersRouter.HasToken, stockQueryRouter) //remove hastoken when testing using postman
