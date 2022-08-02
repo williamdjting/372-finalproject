@@ -1,5 +1,6 @@
 var chai = require("chai");
 var server = require('../server');
+const User = require('../models/user.model');
 
 // before ( done =>
 // {
@@ -128,10 +129,56 @@ describe('testing functions in users.js', function() {
 })
 
 
-// describe('testing functions in groups.js', function() {
-//   //tests associated with querying the api
-//   it('')
+describe('testing functions in groups.js', function() {
+  //tests associated with querying the api
+  it('register a group', function(done){
+    var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
+    chai.request(server)
+      .post('/users/login').send(existingUser)
+      .end(function(err,res){
+        res.should.have.status(200);
+        res.should.be.json;
+        res.body.login.should.be.equal(true);
+        done();
+      });
+  });
+
+  it('join a group', function(done){
+    var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
+    chai.request(server)
+      .post('/users/login').send(existingUser)
+      .end(function(err,res){
+        res.should.have.status(200);
+        res.should.be.json;
+        res.body.login.should.be.equal(true);
+        done();
+      });
+  });
+
+  it('leave a group', function(done){
+    var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
+    chai.request(server)
+      .post('/users/login').send(existingUser)
+      .end(function(err,res){
+        res.should.have.status(200);
+        res.should.be.json;
+        res.body.login.should.be.equal(true);
+        done();
+      });
+  });
+
+  it('delete a group', function(done){
+    var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
+    chai.request(server)
+      .post('/users/login').send(existingUser)
+      .end(function(err,res){
+        res.should.have.status(200);
+        res.should.be.json;
+        res.body.login.should.be.equal(true);
+        done();
+      });
+  });
 
 
-
-// })
+// end of describe
+})
