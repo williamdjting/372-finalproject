@@ -1,6 +1,7 @@
 var chai = require("chai");
 // const assert = require('chai').assert;
 var server = require('../server');
+
 // before ( done =>
 // {
 //   server.on("app_started", function()
@@ -8,10 +9,11 @@ var server = require('../server');
 //     done()
 //   })
 // })
+
 var chaiHttp = require("chai-http");
 var should = chai.should();
 var bcrypt = require("bcrypt");
-var expect = chai.expect();
+var expect = chai.expect;
 var assert = require("chai").assert;
 
 chai.use(chaiHttp);
@@ -44,6 +46,18 @@ describe('testing functions in stockquery.js', function() {
 
 
   });
+
+  describe('should GET /',  () => {
+    it('should get 200 status', (done) =>{
+        chai.request(server)
+        .get('/')
+        .end( (err, res) => {
+            res.should.have.status(200);
+            done();
+        });
+    });
+
+  })
 
 });
 
