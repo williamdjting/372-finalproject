@@ -1,6 +1,7 @@
 var chai = require("chai");
 var server = require('../server');
 const User = require('../models/user.model');
+const Group = require('../models/group.model');
 
 // before ( done =>
 // {
@@ -118,7 +119,7 @@ describe('testing functions in users.js', function() {
       .end(function(err,res){
         res.should.have.status(200);
         res.should.be.json;
-        res.body.login.should.be.equal(true);
+        // res.body.login.should.be.equal(true);
         done();
       });
   });
@@ -132,13 +133,13 @@ describe('testing functions in users.js', function() {
 describe('testing functions in groups.js', function() {
   //tests associated with querying the api
   it('register a group', function(done){
-    var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
+    var newGroup = {'name': 'testGroup'}
     chai.request(server)
-      .post('/users/login').send(existingUser)
+      .post('/groups/register').send.Group(newGroup)
       .end(function(err,res){
         res.should.have.status(200);
         res.should.be.json;
-        res.body.login.should.be.equal(true);
+        // res.body.login.should.be.equal(true);
         done();
       });
   });
@@ -146,11 +147,11 @@ describe('testing functions in groups.js', function() {
   it('join a group', function(done){
     var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
     chai.request(server)
-      .post('/users/login').send(existingUser)
+      .post('/groups/join').send(existingUser)
       .end(function(err,res){
         res.should.have.status(200);
         res.should.be.json;
-        res.body.login.should.be.equal(true);
+        // res.body.login.should.be.equal(true);
         done();
       });
   });
@@ -158,26 +159,15 @@ describe('testing functions in groups.js', function() {
   it('leave a group', function(done){
     var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
     chai.request(server)
-      .post('/users/login').send(existingUser)
+      .post('/groups/leave').send(existingUser)
       .end(function(err,res){
         res.should.have.status(200);
         res.should.be.json;
-        res.body.login.should.be.equal(true);
+        // res.body.login.should.be.equal(true);
         done();
       });
   });
 
-  it('delete a group', function(done){
-    var existingUser = {'username': 'test@gmail.com', 'password' : 'test'}
-    chai.request(server)
-      .post('/users/login').send(existingUser)
-      .end(function(err,res){
-        res.should.have.status(200);
-        res.should.be.json;
-        res.body.login.should.be.equal(true);
-        done();
-      });
-  });
 
 
 // end of describe
