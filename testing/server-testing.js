@@ -119,7 +119,6 @@ describe('testing functions in users.js', function() {
       .end(function(err,res){
         res.should.have.status(200);
         res.should.be.json;
-        // res.body.login.should.be.equal(true);
         done();
       });
   });
