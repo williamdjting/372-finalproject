@@ -3,13 +3,6 @@ var server = require('../server');
 const User = require('../models/user.model');
 const Group = require('../models/group.model');
 
-// before ( done =>
-// {
-//   server.on("app_started", function()
-//   {
-//     done()
-//   })
-// })
 
 var chaiHttp = require("chai-http");
 var should = chai.should();
@@ -19,11 +12,7 @@ var assert = chai.assert;
 
 chai.use(chaiHttp);
 
-// assertion style = should()
-// test for our user stories
-
 describe('testing functions in stockquery.js', function() {
-  //tests associated with querying the api
   it('should retrieve the stock information of the requested ticker', function(done){
     chai.request(server)
       .get('/stockquery/companyStockOverview')
@@ -88,10 +77,6 @@ describe('testing functions in stockquery.js', function() {
 
 
 
-
-
-
-  //end of describe
 });
 
 
@@ -100,7 +85,6 @@ describe('testing functions in stockquery.js', function() {
 
 
 describe('testing functions in users.js', function() {
-  //tests associated with querying the api
   it('register a new user', function(done){
     var newUser = {'username': "william123", 'email' : "william123@gmail.com", "password" : "williampw", "stockCodes" : []}
     chai.request(server)
@@ -125,12 +109,10 @@ describe('testing functions in users.js', function() {
 
 
 
-// end of describe
 })
 
 
 describe('testing functions in groups.js', function() {
-  //tests associated with querying the api
   it('register a group', function(done){
     var newGroup = {'name': 'testGroup'}
     chai.request(server)
@@ -138,7 +120,6 @@ describe('testing functions in groups.js', function() {
       .end(function(err,res){
         res.should.have.status(200);
         res.should.be.json;
-        // res.body.login.should.be.equal(true);
         done();
       });
   });
@@ -150,7 +131,6 @@ describe('testing functions in groups.js', function() {
       .end(function(err,res){
         res.should.have.status(200);
         res.should.be.json;
-        // res.body.login.should.be.equal(true);
         done();
       });
   });
@@ -162,12 +142,10 @@ describe('testing functions in groups.js', function() {
       .end(function(err,res){
         res.should.have.status(200);
         res.should.be.json;
-        // res.body.login.should.be.equal(true);
         done();
       });
   });
 
 
 
-// end of describe
 })
