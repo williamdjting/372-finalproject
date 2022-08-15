@@ -1,7 +1,7 @@
 # GroupStock
 
 Splittr App
-This project was made by William(william_ting_2@sfu.ca), Matt, and Fend.
+This project was made by William(william_ting_2@sfu.ca), Matt, and Feng.
 
 Please run on local host.
 
